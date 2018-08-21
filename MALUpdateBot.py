@@ -240,7 +240,6 @@ async def reset_display_name():
             print("---")
             await changed_guild.me.edit(nick=None)
 
-
 async def background_update():
     await client.wait_until_ready()
     while not client.is_closed():
@@ -300,7 +299,7 @@ async def add(ctx, *, user):
         server_users[ctx.guild.id] = []
 
     if ctx.guild.id not in server_channel:
-        server_channel[ctx.guild.id] = ctx.guild.id
+        server_channel[ctx.guild.id] = ctx.channel
 
     if is_mal_user(user):
         if add_user(user, ctx.guild.id):
@@ -330,6 +329,9 @@ async def set_channel(ctx):
 
 @client.command()
 async def users(ctx):
+    if ctx.guild.id not in server_channel:
+        server_channel[ctx.guild.id] = ctx.channel
+
     if ctx.guild.id not in server_users:
         server_users[ctx.guild.id] = []
 
