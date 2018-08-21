@@ -109,7 +109,7 @@ def convert_anime_update_to_embed(user, update):
     title = update['anime_title']
     embed = discord.Embed(title=user + "updated" + title)
     if 'anime_image_path' in update:
-        embed.set_image(update['anime_image_path'])
+        embed.set_image(url=update['anime_image_path'])
     embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=True)
     if update['score'] != 0:
         embed.add_field(name="Score: ", value=str(update['score']), inline=True)
@@ -131,7 +131,7 @@ def convert_manga_update_to_embed(user, update):
     title = update['manga_title']
     embed = discord.Embed(title=user + "updated" + title)
     if 'manga_image_path' in update:
-        embed.set_image(update['manga_image_path'])
+        embed.set_image(url=update['manga_image_path'])
     embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=True)
     if update['score'] != 0:
         embed.add_field(name="Score: ", value=str(update['score']), inline=True)
@@ -189,11 +189,11 @@ def add_user(user: str, guild_id: int):
 
 
 def remove_user(user: str, guild_id: int):
-    return_value = True
+    return_value = False
     user_in_server = False
     if user in server_users[guild_id]:
         server_users[guild_id].remove(user)
-        return_value = False
+        return_value = True
     for guild in client.guilds:
         if user in server_users[guild.id]:
             user_in_server = True
@@ -321,6 +321,9 @@ async def set_channel(ctx):
 
 @client.command()
 async def users(ctx):
+    if ctx.guild.id not in server_users:
+        server_users[ctx.guild.id] = []
+
     if len(server_users[ctx.guild.id]) > 0:
         embed = discord.Embed()
         value = ""
@@ -373,5 +376,3 @@ async def on_ready():
         server_channel[guild.id] = guild.id
 
 client.run(TOKEN)
-
-
