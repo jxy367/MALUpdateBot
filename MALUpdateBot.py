@@ -225,11 +225,11 @@ async def main_update():
         updates = get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
         for guild in client.guilds:
-            print(guild, guild.id)
-            if user in server_users[guild.id]:
-                channel = client.get_channel(server_channel[guild.id])
-                for embed in updates:
-                    await channel.send(embed=embed)
+            if guild.id in server_users:
+                if user in server_users[guild.id]:
+                    channel = client.get_channel(server_channel[guild.id])
+                    for embed in updates:
+                        await channel.send(embed=embed)
 
 
 async def reset_display_name():
@@ -239,6 +239,7 @@ async def reset_display_name():
             print(changed_guild.me.display_name)
             print("---")
             await changed_guild.me.edit(nick=None)
+
 
 async def background_update():
     await client.wait_until_ready()
@@ -303,7 +304,6 @@ async def on_message(message):
 
 @client.command()
 async def add(ctx, *, user):
-    print(ctx.guild, ctx.guild.id)
     if ctx.guild.id not in server_users:
         server_users[ctx.guild.id] = []
 
