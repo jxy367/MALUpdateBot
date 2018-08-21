@@ -305,6 +305,7 @@ async def on_message(message):
 
 @client.command()
 async def add(ctx, *, user):
+    print(ctx.guild, ctx.guild.id)
     if ctx.guild not in server_users:
         server_users[ctx.guild] = []
 
