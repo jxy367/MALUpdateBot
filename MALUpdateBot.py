@@ -107,7 +107,7 @@ def convert_updates_to_embeds(user, updates):
 
 def convert_anime_update_to_embed(user, update):
     title = update['anime_title']
-    embed = discord.Embed(title=user + "updated" + title)
+    embed = discord.Embed(title=user + " updated " + title)
     if 'anime_image_path' in update:
         embed.set_image(url=update['anime_image_path'])
     embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=False)
@@ -129,7 +129,7 @@ def convert_anime_update_to_embed(user, update):
 
 def convert_manga_update_to_embed(user, update):
     title = update['manga_title']
-    embed = discord.Embed(title=user + "updated" + title)
+    embed = discord.Embed(title=user + " updated " + title)
     if 'manga_image_path' in update:
         embed.set_image(url=update['manga_image_path'])
     embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=False)
