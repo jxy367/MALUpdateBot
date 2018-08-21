@@ -197,9 +197,10 @@ def remove_user(user: str, guild_id: int):
         server_users[guild_id].remove(user)
         return_value = True
     for guild in client.guilds:
-        if user in server_users[guild.id]:
-            user_in_server = True
-            break
+        if guild.id in server_users:
+            if user in server_users[guild.id]:
+                user_in_server = True
+                break
     if not user_in_server:
         del mal_users[user]
     return return_value
