@@ -299,7 +299,7 @@ async def add(ctx, *, user):
         server_users[ctx.guild.id] = []
 
     if ctx.guild.id not in server_channel:
-        server_channel[ctx.guild.id] = ctx.channel
+        server_channel[ctx.guild.id] = ctx.channel.id
 
     if is_mal_user(user):
         if add_user(user, ctx.guild.id):
@@ -323,14 +323,14 @@ async def remove(ctx, *, user):
 
 @client.command()
 async def set_channel(ctx):
-    server_channel[ctx.guild.id] = ctx.channel
+    server_channel[ctx.guild.id] = ctx.channel.id
     await await_ctx(ctx=ctx, content="This channel will receive updates. Use 'set_channel' command to select a different channel to receive updates.")
 
 
 @client.command()
 async def users(ctx):
     if ctx.guild.id not in server_channel:
-        server_channel[ctx.guild.id] = ctx.channel
+        server_channel[ctx.guild.id] = ctx.channel.id
 
     if ctx.guild.id not in server_users:
         server_users[ctx.guild.id] = []
