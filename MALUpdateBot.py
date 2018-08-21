@@ -182,8 +182,6 @@ def add_user(user: str, guild_id: int):
 
     if user not in server_users[guild_id]:
         server_users[guild_id].append(user)
-
-    if user in mal_users:
         return True
     return False
 
@@ -303,6 +301,7 @@ async def on_message(message):
 
 @client.command()
 async def add(ctx, *, user):
+    user = user.lower()
     if ctx.guild.id not in server_users:
         server_users[ctx.guild.id] = []
 
@@ -313,13 +312,14 @@ async def add(ctx, *, user):
         if add_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content=user + " successfully added")
         else:
-            await await_ctx(ctx=ctx, content="User, " + user + ", could not added")
+            await await_ctx(ctx=ctx, content="User, " + user + ", already in list of users")
     else:
         await await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
 
 @client.command()
 async def remove(ctx, *, user):
+    user = user.lower()
     if user in mal_users:
         if remove_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content="User successfully removed")
