@@ -19,8 +19,8 @@ mal_users = {}  # MAL usernames and (latest manga and anime)
 server_users = {}  # Guild id and MAL usernames
 server_channel = {}  # Guild id and preferred channel
 
-statuses = {1: "Currently Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
-
+anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
+manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
 
 def get_cooldown_key(message_or_channel):
     global on_cooldown
@@ -110,7 +110,7 @@ def convert_anime_update_to_embed(user, update):
     embed = discord.Embed(title=user + " updated " + title)
     if 'anime_image_path' in update:
         embed.set_image(url=update['anime_image_path'])
-    embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=False)
+    embed.add_field(name="Status: ", value=anime_statuses[int(update['status'])], inline=False)
     if update['score'] != 0:
         embed.add_field(name="Score: ", value=str(update['score']), inline=False)
     if update['tags'] != '':
@@ -132,7 +132,7 @@ def convert_manga_update_to_embed(user, update):
     embed = discord.Embed(title=user + " updated " + title)
     if 'manga_image_path' in update:
         embed.set_image(url=update['manga_image_path'])
-    embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=False)
+    embed.add_field(name="Status: ", value=manga_statuses[int(update['status'])], inline=False)
     if update['score'] != 0:
         embed.add_field(name="Score: ", value=str(update['score']), inline=False)
     if update['tags'] != '':
