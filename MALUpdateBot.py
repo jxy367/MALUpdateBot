@@ -225,6 +225,7 @@ async def main_update():
         updates = get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
         for guild in client.guilds:
+            print(guild, guild.id)
             if user in server_users[guild.id]:
                 channel = client.get_channel(server_channel[guild.id])
                 print("channel id: ", server_channel[guild.id])
@@ -317,6 +318,9 @@ async def add(ctx, *, user):
             await await_ctx(ctx=ctx, content="User, " + user + ", could not added")
     else:
         await await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
+
+    for guild in server_channel:
+        print(guild, guild.id, server_channel[guild.id])
 
 
 @client.command()
