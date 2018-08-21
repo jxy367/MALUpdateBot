@@ -226,7 +226,6 @@ async def main_update():
         updates = convert_updates_to_embeds(user, updates)
         for guild in client.guilds:
             if user in server_users[guild.id]:
-                print(server_channel[guild.id])
                 channel = client.get_channel(server_channel[guild.id])
                 for embed in updates:
                     await channel.send(embed=embed)
