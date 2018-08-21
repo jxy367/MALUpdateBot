@@ -321,10 +321,11 @@ async def set_channel(ctx):
 
 @client.command()
 async def users(ctx):
-    embed = discord.Embed(title="MAL Update Bot", description="List of users:", color=0xeee657)
+    embed = discord.Embed()
+    value = ""
     for user in server_users[ctx.guild.id]:
-        embed.add_field(name="User: ", value=user, inline=True)
-
+        value += user + "\n"
+    embed.add_field(name="List of users: ", value=value, inline=True)
     await await_ctx(ctx=ctx, embed=embed)
 
 client.remove_command('help')
