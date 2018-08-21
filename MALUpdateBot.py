@@ -19,7 +19,7 @@ mal_users = {}  # MAL usernames and (latest manga and anime)
 server_users = {}  # Guild id and MAL usernames
 server_channel = {}  # Guild id and preferred channel
 
-statuses = {1: "Current Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plan to watch"}
+statuses = {1: "Currently Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 
 
 def get_cooldown_key(message_or_channel):
@@ -323,7 +323,7 @@ async def remove(ctx, *, user):
 @client.command()
 async def set_channel(ctx):
     server_channel[ctx.guild.id] = ctx.channel.id
-    await await_ctx(ctx=ctx, content="This channel will receive updates. Use 'set_channel' command to select a different channel to receive updates.")
+    await await_ctx(ctx=ctx, content="This channel will receive updates.")
 
 
 @client.command()
