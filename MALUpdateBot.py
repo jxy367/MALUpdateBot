@@ -196,11 +196,10 @@ def remove_user(user: str, guild_id: int):
     if user in server_users[guild_id]:
         server_users[guild_id].remove(user)
         return_value = True
-    for guild in client.guilds:
-        if guild.id in server_users:
-            if user in server_users[guild.id]:
-                user_in_server = True
-                break
+    for guild in server_users:
+        if user in server_users[guild]:
+            user_in_server = True
+            break
     if not user_in_server:
         del mal_users[user]
     return return_value
@@ -225,12 +224,11 @@ async def main_update():
     for user in mal_users:
         updates = get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
-        for guild in client.guilds:
-            if guild.id in server_users:
-                if user in server_users[guild.id]:
-                    channel = client.get_channel(server_channel[guild.id])
-                    for embed in updates:
-                        await channel.send(embed=embed)
+        for guild in server_users:
+            if user in server_users[guild.id]:
+                channel = client.get_channel(server_channel[guild.id])
+                for embed in updates:
+                    await channel.send(embed=embed)
 
 
 async def reset_display_name():
