@@ -295,28 +295,28 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
 async def add(ctx, *, user):
     if is_mal_user(user):
         if add_user(user, ctx.guild.id):
-            await_ctx(ctx=ctx, content=user + " successfully added")
+            await await_ctx(ctx=ctx, content=user + " successfully added")
         else:
-            await_ctx(ctx=ctx, content="User, " + user + ", could not added")
+            await await_ctx(ctx=ctx, content="User, " + user + ", could not added")
     else:
-        await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
+        await await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
 
 @client.command()
 async def remove(ctx, *, user):
     if user in mal_users:
         if remove_user(user, ctx.guild.id):
-            await_ctx(ctx=ctx, content="User successfully removed")
+            await await_ctx(ctx=ctx, content="User successfully removed")
         else:
-            await_ctx(ctx=ctx, content="User, " + user + ", could not be removed")
+            await await_ctx(ctx=ctx, content="User, " + user + ", could not be removed")
     else:
-        await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
+        await await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
 
 @client.command()
 async def set_channel(ctx):
     server_channel[ctx.guild.id] = ctx.channel
-    await_ctx(ctx=ctx, content="This channel will receive updates. Use 'set_channel' command to select a different channel to receive updates.")
+    await await_ctx(ctx=ctx, content="This channel will receive updates. Use 'set_channel' command to select a different channel to receive updates.")
 
 
 @client.command()
@@ -325,7 +325,7 @@ async def users(ctx):
     for user in server_users[ctx.guild.id]:
         embed.add_field(name=user, inline=False)
 
-    await_ctx(ctx=ctx, embed=embed)
+    await await_ctx(ctx=ctx, embed=embed)
 
 client.remove_command('help')
 
@@ -340,7 +340,7 @@ async def help(ctx):
     embed.add_field(name="MUB set_channel", value="Sets the current channel to receive updates")
     embed.add_field(name="MUB help", value="Gives this message", inline=False)
 
-    await_ctx(ctx=ctx, embed=embed)
+    await await_ctx(ctx=ctx, embed=embed)
 
 
 @client.event
