@@ -228,8 +228,6 @@ async def main_update():
             print(guild, guild.id)
             if user in server_users[guild.id]:
                 channel = client.get_channel(server_channel[guild.id])
-                print("channel id: ", server_channel[guild.id])
-                print("channel: ", channel)
                 for embed in updates:
                     await channel.send(embed=embed)
 
@@ -306,14 +304,14 @@ async def on_message(message):
 @client.command()
 async def add(ctx, *, user):
     print(ctx.guild, ctx.guild.id)
-    if ctx.guild not in server_users:
-        server_users[ctx.guild] = []
+    if ctx.guild.id not in server_users:
+        server_users[ctx.guild.id] = []
 
-    if ctx.guild not in server_channel:
-        server_channel[ctx.guild] = ctx.channel.id
+    if ctx.guild.id not in server_channel:
+        server_channel[ctx.guild.id] = ctx.channel.id
 
     if is_mal_user(user):
-        if add_user(user, ctx.guild):
+        if add_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content=user + " successfully added")
         else:
             await await_ctx(ctx=ctx, content="User, " + user + ", could not added")
@@ -324,7 +322,7 @@ async def add(ctx, *, user):
 @client.command()
 async def remove(ctx, *, user):
     if user in mal_users:
-        if remove_user(user, ctx.guild):
+        if remove_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content="User successfully removed")
         else:
             await await_ctx(ctx=ctx, content="User, " + user + ", could not be removed")
@@ -334,19 +332,19 @@ async def remove(ctx, *, user):
 
 @client.command()
 async def set_channel(ctx):
-    server_channel[ctx.guild] = ctx.channel.id
+    server_channel[ctx.guild.id] = ctx.channel.id
     await await_ctx(ctx=ctx, content="This channel will receive updates.")
 
 
 @client.command()
 async def users(ctx):
-    if ctx.guild not in server_channel:
-        server_channel[ctx.guild] = ctx.channel.id
+    if ctx.guild.id not in server_channel:
+        server_channel[ctx.guild.id] = ctx.channel.id
 
-    if ctx.guild not in server_users:
-        server_users[ctx.guild] = []
+    if ctx.guild.id not in server_users:
+        server_users[ctx.guild.id] = []
 
-    if len(server_users[ctx.guild]) > 0:
+    if len(server_users[ctx.guild.id]) > 0:
         embed = discord.Embed()
         value = ""
         for user in server_users[ctx.guild]:
@@ -375,7 +373,7 @@ async def help(ctx):
 @client.event
 async def on_guild_join(guild):
     server_users[guild.id] = []
-    server_channel[guild.id] = guild.id
+    server_channel[guild.id] = guild.textchannels[0]
 
 
 @client.event
