@@ -321,12 +321,15 @@ async def set_channel(ctx):
 
 @client.command()
 async def users(ctx):
-    embed = discord.Embed()
-    value = ""
-    for user in server_users[ctx.guild.id]:
-        value += user + "\n"
-    embed.add_field(name="List of users: ", value=value, inline=True)
-    await await_ctx(ctx=ctx, embed=embed)
+    if len(server_users[ctx.guild.id]) > 0:
+        embed = discord.Embed()
+        value = ""
+        for user in server_users[ctx.guild.id]:
+            value += user + "\n"
+        embed.add_field(name="List of users: ", value=value, inline=True)
+        await await_ctx(ctx=ctx, embed=embed)
+    else:
+        await await_ctx(ctx=ctx, content="This server has not added any users")
 
 client.remove_command('help')
 
