@@ -1,30 +1,23 @@
 import discord
 from discord.ext import commands
 import asyncio
-import random
-from datetime import datetime
-from pytz import timezone
 import os
 import urllib
 from urllib import request
 from urllib import error
-from urllib import parse
+
 from bs4 import BeautifulSoup
 import json
-#import youtube_dl
-import time
-import re
 
-#TOKEN = os.environ.get('TOKEN')
+TOKEN = os.environ.get('TOKEN')
 
-
-#client = commands.Bot(command_prefix="guubot ", case_insensitive=True)
+client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 
 on_cooldown = {}
 cooldown_time = 10
-mal_users = {} # MAL usernames and (latest manga and anime)
-server_users = {} # Guild id and MAL usernames
-server_channel = {} # Guild id and preferred channel
+mal_users = {}  # MAL usernames and (latest manga and anime)
+server_users = {}  # Guild id and MAL usernames
+server_channel = {}  # Guild id and preferred channel
 
 statuses = {1: "Current Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plan to watch"}
 
@@ -55,9 +48,6 @@ def reset_cooldown(message_or_channel):
     global cooldown_time
     key = get_cooldown_key(message_or_channel)
     on_cooldown[key] = cooldown_time
-
-
-#def request_mal_user_data(user: str):
 
 
 def is_mal_user(user: str):
@@ -178,7 +168,7 @@ def get_user_updates(user: str):
             break
         updates.append(manga_entry)
 
-    updates.reverse() # So that updates are in from oldest to newest
+    updates.reverse()  # So that updates are in from oldest to newest
 
     mal_users[user] = (manga_list[0]['manga_title'], anime_list[0]['anime_title'])
     return updates
@@ -213,6 +203,21 @@ def remove_user(user: str, guild_id: int):
     return return_value
 
 
+def remove_unnecessary_users():
+    unnecessary_users = []
+    for user in mal_users:
+        user_necessary = False
+        for guild_id in server_users:
+            if user in server_users[guild_id]:
+                user_necessary = True
+                break
+        if not user_necessary:
+            unnecessary_users.append(user)
+
+    for unnecessary_user in unnecessary_users:
+        del mal_users[unnecessary_user]
+
+
 async def main_update():
     for user in mal_users:
         updates = get_user_updates(user)
@@ -236,6 +241,7 @@ async def reset_display_name():
 async def background_update():
     await client.wait_until_ready()
     while not client.is_closed():
+        await main_update()
         await reset_display_name()
         await asyncio.sleep(60)
 
@@ -285,7 +291,7 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
     reset_cooldown(ctx.channel)
 
 
-#@client.command()
+@client.command()
 async def add(ctx, *, user):
     if is_mal_user(user):
         if add_user(user, ctx.guild.id):
@@ -296,7 +302,7 @@ async def add(ctx, *, user):
         await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
 
-#@client.command()
+@client.command()
 async def remove(ctx, *, user):
     if user in mal_users:
         if remove_user(user, ctx.guild.id):
@@ -307,12 +313,13 @@ async def remove(ctx, *, user):
         await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
 
-#@client.command()
+@client.command()
 async def set_channel(ctx):
     server_channel[ctx.guild.id] = ctx.channel
     await_ctx(ctx=ctx, content="This channel will receive updates. Use 'set_channel' command to select a different channel to receive updates.")
 
-#@client.command()
+
+@client.command()
 async def users(ctx):
     embed = discord.Embed(title="MAL Update Bot", description="List of users:", color=0xeee657)
     for user in server_users[ctx.guild.id]:
@@ -320,10 +327,10 @@ async def users(ctx):
 
     await_ctx(ctx=ctx, embed=embed)
 
-#client.remove_command('help')
+client.remove_command('help')
 
 
-#@client.command()
+@client.command()
 async def help(ctx):
     embed = discord.Embed(title="MAL Update Bot", description="List of commands:", color=0xeee657)
 
@@ -335,7 +342,21 @@ async def help(ctx):
 
     await_ctx(ctx=ctx, embed=embed)
 
-#@client.event
+
+@client.event
+async def on_guild_join(guild):
+    server_users[guild.id] = []
+    server_channel[guild.id] = guild.id
+
+
+@client.event
+async def on_guild_remove(guild):
+    del server_users[guild.id]
+    del server_channel[guild.id]
+    remove_unnecessary_users()
+
+
+@client.event
 async def on_ready():
     print('Logged in as')
     print(client.user.name)
