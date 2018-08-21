@@ -189,6 +189,8 @@ def add_user(user: str, guild_id: int):
 
 
 def remove_user(user: str, guild_id: int):
+    if guild_id not in server_users:
+        return False
     return_value = False
     user_in_server = False
     if user in server_users[guild_id]:
@@ -224,6 +226,7 @@ async def main_update():
         updates = convert_updates_to_embeds(user, updates)
         for guild in client.guilds:
             if user in server_users[guild.id]:
+                print(server_channel[guild.id])
                 channel = client.get_channel(server_channel[guild.id])
                 for embed in updates:
                     await channel.send(embed=embed)
@@ -293,6 +296,12 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
 
 @client.command()
 async def add(ctx, *, user):
+    if ctx.guild.id not in server_users:
+        server_users[ctx.guild.id] = []
+
+    if ctx.guild.id not in server_channel:
+        server_channel[ctx.guild.id] = ctx.guild.id
+
     if is_mal_user(user):
         if add_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content=user + " successfully added")
@@ -371,8 +380,5 @@ async def on_ready():
     print('------')
     client.loop.create_task(background_update())
     client.loop.create_task(cooldown())
-    for guild in client.guilds:
-        server_users[guild.id] = []
-        server_channel[guild.id] = guild.id
 
 client.run(TOKEN)
