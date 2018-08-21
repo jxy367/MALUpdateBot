@@ -368,9 +368,6 @@ async def on_ready():
         server_users[guild.id] = []
         server_channel[guild.id] = guild.id
 
-#client.run(TOKEN)
-
-#print(is_MAL_profile("aaaabbbbbaaaa"))
-print(latest_entry("sfieron", "manga"))
+client.run(TOKEN)
 
 
