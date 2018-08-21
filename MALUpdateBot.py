@@ -221,7 +221,7 @@ def remove_unnecessary_users():
 async def main_update():
     for user in mal_users:
         updates = get_user_updates(user)
-        updates = convert_updates_to_embeds(updates)
+        updates = convert_updates_to_embeds(user, updates)
         for guild in client.guilds:
             if user in server_users[guild.id]:
                 channel = server_channel[guild.id]
