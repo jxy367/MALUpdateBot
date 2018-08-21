@@ -292,6 +292,14 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
     reset_cooldown(ctx.channel)
 
 
+@client.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    await client.process_commands(message)
+
+
 @client.command()
 async def add(ctx, *, user):
     if ctx.guild.id not in server_users:
