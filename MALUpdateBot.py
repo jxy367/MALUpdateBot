@@ -347,7 +347,7 @@ async def users(ctx):
     if len(server_users[ctx.guild.id]) > 0:
         embed = discord.Embed()
         value = ""
-        for user in server_users[ctx.guild]:
+        for user in server_users[ctx.guild.id]:
             value += user + "\n"
         embed.add_field(name="List of users: ", value=value, inline=True)
         await await_ctx(ctx=ctx, embed=embed)
