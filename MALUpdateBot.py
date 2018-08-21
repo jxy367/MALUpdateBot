@@ -110,19 +110,19 @@ def convert_anime_update_to_embed(user, update):
     embed = discord.Embed(title=user + "updated" + title)
     if 'anime_image_path' in update:
         embed.set_image(update['anime_image_path'])
-    embed.add_field(name="Status: " + statuses[int(update['status'])], value="", inline=False)
+    embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=True)
     if update['score'] != 0:
-        embed.add_field(name="Score: " + str(update['score']), value="", inline=False)
+        embed.add_field(name="Score: ", value=str(update['score']), inline=True)
     if update['tags'] != '':
-        embed.add_field(name="Tags: " + update['tags'], value="", inline=False)
+        embed.add_field(name="Tags: ", value=update['tags'], inline=True)
 
     if update['is_rewatching'] != 0:
-        embed.add_field(name="Rewatched: " + str(update['is_rewatching']) + " times", value="", inline=False)
+        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=True)
 
     if update['anime_media_type_string'] != 'Movie':
         if 'num_watched_episodes' in update and 'anime_num_episodes' in update:
-            embed.add_field(name="Episodes watched: " + str(update['num_watched_episodes']) + "/" + str(
-                update['anime_num_episodes']), value="", inline=False)
+            embed.add_field(name="Episodes watched: ", value=str(update['num_watched_episodes']) + "/" + str(
+                update['anime_num_episodes']), inline=True)
 
     return embed
 
@@ -132,22 +132,22 @@ def convert_manga_update_to_embed(user, update):
     embed = discord.Embed(title=user + "updated" + title)
     if 'manga_image_path' in update:
         embed.set_image(update['manga_image_path'])
-    embed.add_field(name="Status: " + statuses[int(update['status'])], value="", inline=False)
+    embed.add_field(name="Status: ", value=statuses[int(update['status'])], inline=True)
     if update['score'] != 0:
-        embed.add_field(name="Score: " + str(update['score']), value="", inline=False)
+        embed.add_field(name="Score: ", value=str(update['score']), inline=True)
     if update['tags'] != '':
-        embed.add_field(name="Tags: " + update['tags'], value="", inline=False)
+        embed.add_field(name="Tags: ", value=update['tags'], inline=True)
 
     if update['is_rereading'] != 0:
-        embed.add_field(name="Reread: " + str(update['is_rereading']) + " times", value="", inline=False)
+        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=True)
 
     if 'num_read_chapters' in update and 'manga_num_chapters' in update:
         read_chapters = update['num_read_chapters']
         num_chapters = update['manga_num_chapters']
         if read_chapters < num_chapters:
-            embed.add_field(name="Chapters read: " + str(read_chapters) + "/" + str(num_chapters), value="", inline=False)
+            embed.add_field(name="Chapters read: ", value=str(read_chapters) + "/" + str(num_chapters), inline=True)
         else:
-            embed.add_field(name="Chapters read: " + str(read_chapters), value="", inline=False)
+            embed.add_field(name="Chapters read: ", value=str(read_chapters), inline=True)
 
     return embed
 
@@ -323,7 +323,7 @@ async def set_channel(ctx):
 async def users(ctx):
     embed = discord.Embed(title="MAL Update Bot", description="List of users:", color=0xeee657)
     for user in server_users[ctx.guild.id]:
-        embed.add_field(name=user, value="", inline=False)
+        embed.add_field(name="User: ", value=user, inline=True)
 
     await await_ctx(ctx=ctx, embed=embed)
 
