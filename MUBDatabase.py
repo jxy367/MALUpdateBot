@@ -57,10 +57,10 @@ class MUBDatabase:
             return False
         return True
 
-    def add_user(self, user: str, manga: str, anime: str):
-        sql = """INSERT INTO users(name, last_manga, last_anime) VALUES(%s, %s, %s);"""
+    def add_user(self, user: str, anime: str, manga: str):
+        sql = """INSERT INTO users(name, last_anime, last_manga) VALUES(%s, %s, %s);"""
         try:
-            self.cur.execute(sql, (user, manga, anime))
+            self.cur.execute(sql, (user, anime, manga))
             self.conn.commit()
 
         except Exception as e:
@@ -136,10 +136,10 @@ class MUBDatabase:
             return False
         return True
 
-    def update_user(self, user: str, manga: str, anime: str):
-        sql = """UPDATE users SET last_manga = %s, last_anime = %s WHERE name = %s"""
+    def update_user(self, user: str, anime: str, manga: str):
+        sql = """UPDATE users SET last_anime = %s, last_manga = %s WHERE name = %s"""
         try:
-            self.cur.execute(sql, (manga, anime, user))
+            self.cur.execute(sql, (anime, manga, user))
             self.conn.commit()
 
         except Exception as e:
@@ -168,9 +168,7 @@ class MUBDatabase:
         try:
             self.cur.execute(sql)
             data = self.cur.fetchall()
-            print("MUB get users")
             for tup in data:
-                print("User: " + str(tup[0]) + ", Manga: " + str(tup[1]) + ", Anime: " + str(tup[2]))
                 users[tup[0]] = (tup[1], tup[2])
         except Exception as e:
             print(e)

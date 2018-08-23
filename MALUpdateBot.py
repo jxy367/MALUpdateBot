@@ -20,7 +20,7 @@ client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 on_cooldown = {}
 cooldown_time = 10
 
-mal_users = mub_db.get_users()  # MAL usernames and (latest manga and anime)
+mal_users = mub_db.get_users()  # MAL usernames and (latest anime and manga)
 server_channel = mub_db.get_guilds()  # Guild id and MAL usernames
 server_users = mub_db.get_guild_users()  # Guild id and preferred channel
 
@@ -38,7 +38,7 @@ def get_cooldown_key(message_or_channel):
         elif isinstance(message_or_channel, discord.TextChannel):
             key = message_or_channel.id
         else:
-            key = "unforunate"
+            key = "unfortunate"
     if key not in on_cooldown:
         on_cooldown[key] = 0
     return key
@@ -160,9 +160,9 @@ def convert_manga_update_to_embed(user, update):
 
 def get_user_updates(user: str):
     updates = []
-    last_manga_entry, last_anime_entry = mal_users[user]
-    manga_list = mal_list(user, "manga")
+    last_anime_entry, last_manga_entry = mal_users[user]
     anime_list = mal_list(user, "anime")
+    manga_list = mal_list(user, "manga")
 
     for anime_entry in anime_list:
         if anime_entry['anime_title'] == last_anime_entry:
@@ -179,26 +179,26 @@ def get_user_updates(user: str):
 
         updates.append(manga_entry)
 
-        if last_manga_entry =="":
+        if last_manga_entry == "":
             break
 
     updates.reverse()  # So that updates are in from oldest to newest
 
     if len(updates) > 0:
-        manga = manga_list[0]['manga_title']
         anime = anime_list[0]['anime_title']
-        mal_users[user] = (manga, anime)
-        mub_db.update_user(user, manga, anime)
+        manga = manga_list[0]['manga_title']
+        mal_users[user] = (anime, manga)
+        mub_db.update_user(user, anime, manga)
 
     return updates
 
 
 def add_user(user: str, guild_id: int):
     if user not in mal_users:
-        manga_entry = latest_entry_title(user, "manga")
         anime_entry = latest_entry_title(user, "anime")
-        mal_users[user] = (manga_entry, anime_entry)
-        mub_db.add_user(user, manga_entry, anime_entry)
+        manga_entry = latest_entry_title(user, "manga")
+        mal_users[user] = (anime_entry, manga_entry)
+        mub_db.add_user(user, anime_entry, manga_entry)
 
     if user not in server_users[guild_id]:
         server_users[guild_id].append(user)
@@ -252,7 +252,7 @@ async def main_update():
     print("--------------------------")
     print("Number of users: " + str(len(mal_users)))
     for u in mal_users:
-        print("User: " + str(u) + ", Manga: " + str(mal_users[u][0]) + ", Anime: " + str(mal_users[u][1]))
+        print("User: " + str(u) + ", Anime: " + str(mal_users[u][0]) + ", Manga: " + str(mal_users[u][1]))
     print("Number of servers: " + str(len(server_channel)))
     for sc in server_channel:
         print("Server " + str(sc) + " : " + str(server_channel[sc]))
