@@ -195,7 +195,10 @@ class MUBDatabase:
             self.cur.execute(sql)
             data = self.cur.fetchall()
             for tup in data:
-                guild_users[tup[0]] = tup[1]
+                if tup[0] in guild_users:
+                    guild_users[tup[0]].append(tup[1])
+                else:
+                    guild_users[tup[0]] = [tup[1]]
         except Exception as e:
             print(e)
             print("Failed to get guild users")
