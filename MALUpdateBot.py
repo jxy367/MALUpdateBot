@@ -247,8 +247,7 @@ def remove_unnecessary_users():
         mub_db.remove_user(user)
 
 
-async def main_update():
-    # Printing output
+def print_output():
     print("--------------------------")
     print("Number of users: " + str(len(mal_users)))
     for u in mal_users:
@@ -259,6 +258,11 @@ async def main_update():
     print("Server and users")
     for s in server_users:
         print("Server " + str(s) + " : " + str(server_users[s]))
+
+
+async def main_update():
+    # Printing output
+    #print_output()
 
     # Actual update
     for user in mal_users:
