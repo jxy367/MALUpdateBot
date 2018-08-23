@@ -15,8 +15,8 @@ TOKEN = os.environ.get('TOKEN')
 DATABASE_URL = os.environ['DATABASE_URL']
 mub_db = MUBDatabase(DATABASE_URL)
 mal_users = mub_db.get_users()
-server_users = mub_db.get_guilds()
-server_channel = mub_db.get_guild_users()
+server_channel = mub_db.get_guilds()
+server_users = mub_db.get_guild_users()
 client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 
 on_cooldown = {}
