@@ -262,7 +262,6 @@ def print_values():
 
 def print_status():
     print("---- Status ------")
-    print("Bot status: " + str(client.status))
     print("Is closed: " + str(client.is_closed()))
     print("Is ready: " + str(client.is_ready()))
     print("Websocket: " + str(client.ws))
