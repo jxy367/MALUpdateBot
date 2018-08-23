@@ -250,7 +250,7 @@ def remove_unnecessary_users():
 
 
 def print_values():
-    print("--------------------------")
+    print("------ Data Values ---------")
     print("Number of users: " + str(len(mal_users)))
     for u in mal_users:
         print("User: " + str(u) + ", Anime: " + str(mal_users[u][0]) + ", Manga: " + str(mal_users[u][1]))
@@ -279,10 +279,10 @@ def print_status():
 async def main_update():
     global count
     # Printing output
-    #print_output()
+    print_values()
 
     # Printing status
-    print_status()
+    #print_status()
 
     # Actual update
     for user in mal_users:
