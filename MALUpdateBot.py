@@ -459,8 +459,7 @@ async def on_ready():
         if g.id not in server_channel:
             server_channel[g.id] = g.text_channels[0].id
 
-    client.loop.create_task(background_update())
-    client.loop.create_task(cooldown())
 
-
+client.loop.create_task(background_update())
+client.loop.create_task(cooldown())
 client.run(TOKEN)
