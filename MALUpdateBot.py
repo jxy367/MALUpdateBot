@@ -283,7 +283,8 @@ async def main_update():
         updates = convert_updates_to_embeds(user, updates)
         for guild in server_users:
             if user in server_users[guild]:
-                channel = client.get_channel(server_channel[guild])
+                hold_channel = server_channel[guild]
+                channel = client.get_channel(hold_channel)
                 if channel is None:
                     channel = client.get_guild(guild).text_channels[0]
                     server_channel[guild] = channel.id
@@ -455,10 +456,10 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+    for g in client.guilds:
+        if g.id not in server_channel:
+            server_channel[g.id] = g.text_channels[0].id
 
-for g in client.guilds:
-    if g.id not in server_channel:
-        server_channel[g.id] = g.text_channels[0].id
 client.loop.create_task(background_update())
 client.loop.create_task(cooldown())
 client.run(TOKEN)
