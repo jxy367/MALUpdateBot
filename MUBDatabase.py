@@ -51,6 +51,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("Guild user was not added")
             return False
@@ -63,6 +64,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("User was not added")
             return False
@@ -75,6 +77,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("Guild was not added")
             return False
@@ -87,6 +90,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("Guild user was not removed")
             return False
@@ -99,6 +103,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("Guild users were not removed")
             return False
@@ -111,6 +116,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("User was not removed")
             return False
@@ -124,6 +130,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("Guild was not removed")
             return False
@@ -136,6 +143,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("User was not updated")
             return False
@@ -148,6 +156,7 @@ class MUBDatabase:
             self.conn.commit()
 
         except Exception as e:
+            self.conn.rollback()
             print(e)
             print("Guild was not updated")
             return False
@@ -160,7 +169,7 @@ class MUBDatabase:
             self.cur.execute(sql)
             data = self.cur.fetchall()
             for tup in data:
-                users[tup[0]] = (tup[1],tup[2])
+                users[tup[0]] = (tup[1], tup[2])
         except Exception as e:
             print(e)
             print("Failed to get users")
@@ -191,6 +200,8 @@ class MUBDatabase:
             print(e)
             print("Failed to get guild users")
         return guild_users
+
+
 
 #    def synchronize(self, mal_users, server_users, server_channels):
 #        synchronize_users(mal_users)

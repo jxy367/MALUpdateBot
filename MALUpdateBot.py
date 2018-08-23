@@ -354,6 +354,7 @@ async def remove(ctx, *, user):
 @client.command()
 async def set_channel(ctx):
     server_channel[ctx.guild.id] = ctx.channel.id
+    mub_db.update_guild(ctx.guild.id, ctx.channel.id)
     await await_ctx(ctx=ctx, content="This channel will receive updates.")
 
 
