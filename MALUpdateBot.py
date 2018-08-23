@@ -242,7 +242,12 @@ def remove_unnecessary_users():
 
 async def main_update():
     print("Number of users: " + str(len(mal_users)))
+    for u in mal_users:
+        print(u)
     print("Number of servers: " + str(len(server_channel)))
+    for sc in server_channel:
+        print("Server " + str(sc) + " : " + str(server_channel[sc]))
+    print("Server and users")
     for s in server_users:
         print("Server " + str(s) + " has " + str(len(server_users[s])))
     for user in mal_users:
