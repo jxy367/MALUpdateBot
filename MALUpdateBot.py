@@ -265,6 +265,7 @@ async def main_update():
                 channel = client.get_channel(server_channel[guild])
                 if channel is None:
                     channel = client.get_guild(guild).text_channels[0]
+                    server_channel[guild] = channel.id
                     mub_db.update_guild(guild, channel.id)
                 for embed in updates:
                     await channel.send(embed=embed)
