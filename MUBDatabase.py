@@ -84,7 +84,7 @@ class MUBDatabase:
         return True
 
     def remove_guild_user(self, guild: int, user: str):
-        sql = """DELETE FROM guild_users WHERE id = %s AND name = %s);"""
+        sql = """DELETE FROM guild_users WHERE id = %s AND name = %s;"""
         try:
             self.cur.execute(sql, (guild, user))
             self.conn.commit()
@@ -97,7 +97,7 @@ class MUBDatabase:
         return True
 
     def remove_guild_users(self, guild: int):
-        sql = """DELETE FROM guild_userss WHERE id = %s"""
+        sql = """DELETE FROM guild_users WHERE id = %s"""
         try:
             self.cur.execute(sql, (guild,))
             self.conn.commit()
@@ -109,8 +109,8 @@ class MUBDatabase:
             return False
         return True
 
-    def remove_user(self, user:str):
-        sql = """DELETE FROM users WHERE name = %s);"""
+    def remove_user(self, user: str):
+        sql = """DELETE FROM users WHERE name = %s;"""
         try:
             self.cur.execute(sql, (user,))
             self.conn.commit()
