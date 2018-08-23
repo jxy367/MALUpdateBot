@@ -256,9 +256,8 @@ async def main_update():
         print("Server " + str(sc) + " : " + str(server_channel[sc]))
     print("Server and users")
     for s in server_users:
-        print("Server " + str(s) + " has " + str(len(server_users[s])))
-        for us in server_users[s]:
-            print(us)
+        print("Server " + str(s) + " : " + str(server_users[s]))
+
     for user in mal_users:
         updates = get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
