@@ -424,7 +424,7 @@ async def on_ready():
 
     for g in client.guilds:
         if g.id not in server_channel:
-            server_channel[g.id] = g.textchannels[0]
+            server_channel[g.id] = g.text_channels[0].id
 
     client.loop.create_task(background_update())
     client.loop.create_task(cooldown())
