@@ -267,6 +267,7 @@ def print_status():
     print("Is closed: " + str(client.is_closed()))
     print("Is ready: " + str(client.is_ready()))
     print("Websocket: " + str(client.ws))
+    print([method_name for method_name in dir(client.ws) if callable(getattr(object, method_name))])
     print("Per server: ")
     for g in client.guilds:
         print(str(g.me.status))
@@ -278,7 +279,7 @@ async def main_update():
     #print_output()
 
     # Printing status
-    print_status()
+    #print_status()
 
     # Actual update
     for user in mal_users:
@@ -297,8 +298,11 @@ async def main_update():
 
     count += 1
     count = count % 10
+    print(count)
     if count == 0:
+        print("Logout")
         await client.logout()
+        print("Start")
         await client.start()
 
 
