@@ -279,7 +279,7 @@ async def main_update():
     #print_output()
 
     # Printing status
-    #print_status()
+    print_status()
 
     # Actual update
     for user in mal_users:
