@@ -167,12 +167,20 @@ def get_user_updates(user: str):
     for anime_entry in anime_list:
         if anime_entry['anime_title'] == last_anime_entry:
             break
+
         updates.append(anime_entry)
+
+        if last_anime_entry == "":
+            break
 
     for manga_entry in manga_list:
         if manga_entry['manga_title'] == last_manga_entry:
             break
+
         updates.append(manga_entry)
+
+        if last_manga_entry =="":
+            break
 
     updates.reverse()  # So that updates are in from oldest to newest
 
