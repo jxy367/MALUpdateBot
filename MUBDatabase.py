@@ -150,7 +150,7 @@ class MUBDatabase:
         return True
 
     def update_guild(self, guild: int, channel: int):
-        sql = """UPDATE guild SET channel_id = %s WHERE id = %s"""
+        sql = """UPDATE guilds SET channel_id = %s WHERE id = %s"""
         try:
             self.cur.execute(sql, (channel, guild))
             self.conn.commit()
