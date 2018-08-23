@@ -241,6 +241,10 @@ def remove_unnecessary_users():
 
 
 async def main_update():
+    print("Number of users: " + str(len(mal_users)))
+    print("Number of servers: " + str(len(server_channel)))
+    for s in server_users:
+        print("Server " + str(s) + " has " + str(len(server_users[s])))
     for user in mal_users:
         updates = get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
