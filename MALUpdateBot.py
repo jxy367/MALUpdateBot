@@ -266,6 +266,9 @@ def print_status():
     print("Is closed: " + str(client.is_closed()))
     print("Is ready: " + str(client.is_ready()))
     print("Websocket: " + str(client.ws))
+    print("Per server: ")
+    for g in client.guilds:
+        print(str(g.me.status))
 
 
 async def main_update():
