@@ -268,6 +268,9 @@ def print_status():
     print("Is ready: " + str(client.is_ready()))
     print("Websocket: " + str(client.ws))
     print([method_name for method_name in dir(client.ws) if callable(getattr(client.ws, method_name))])
+    print("Websocket connect: " + str(client.ws.connect))
+    print("Websocket client connected: " + str(client.ws.client_connected))
+    print("Websocket connection open: " + str(client.ws.connection_open))
     print("Per server: ")
     for g in client.guilds:
         print(str(g.me.status))
