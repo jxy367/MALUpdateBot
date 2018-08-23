@@ -474,6 +474,7 @@ async def on_ready():
     for g in client.guilds:
         if g.id not in server_channel:
             server_channel[g.id] = g.text_channels[0].id
+            mub_db.add_guild(g.id, g.text_channels[0].id)
 
     if not tasks_created:
         client.loop.create_task(background_update())
