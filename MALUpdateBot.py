@@ -27,6 +27,7 @@ server_users = mub_db.get_guild_users()  # Guild id and preferred channel
 anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
 
+count = 0
 
 def get_cooldown_key(message_or_channel):
     global on_cooldown
@@ -451,6 +452,7 @@ async def on_guild_remove(guild):
 
 @client.event
 async def on_ready():
+    global count
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -460,6 +462,9 @@ async def on_ready():
         if g.id not in server_channel:
             server_channel[g.id] = g.text_channels[0].id
 
-client.loop.create_task(background_update())
-client.loop.create_task(cooldown())
+    if count == 0:
+        client.loop.create_task(background_update())
+        client.loop.create_task(cooldown())
+        count += 1
+        
 client.run(TOKEN)
