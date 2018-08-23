@@ -247,7 +247,7 @@ def remove_unnecessary_users():
         mub_db.remove_user(user)
 
 
-def print_output():
+def print_values():
     print("--------------------------")
     print("Number of users: " + str(len(mal_users)))
     for u in mal_users:
@@ -260,9 +260,20 @@ def print_output():
         print("Server " + str(s) + " : " + str(server_users[s]))
 
 
+def print_status():
+    print("---- Status ------")
+    print("Is closed: " + client.is_closed())
+    print("Is logged in: " + client.is_logged_in)
+    print("Is ready: " + client.is_ready)
+    print("Websocket: " + client.ws)
+
+
 async def main_update():
     # Printing output
     #print_output()
+
+    # Printing status
+    print_status()
 
     # Actual update
     for user in mal_users:
