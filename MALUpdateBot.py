@@ -248,6 +248,8 @@ def remove_unnecessary_users():
 
 
 async def main_update():
+    # Printing output
+    print("--------------------------")
     print("Number of users: " + str(len(mal_users)))
     for u in mal_users:
         print("User: " + str(u) + ", Manga: " + str(mal_users[u][0]) + ", Anime: " + str(mal_users[u][1]))
@@ -258,6 +260,7 @@ async def main_update():
     for s in server_users:
         print("Server " + str(s) + " : " + str(server_users[s]))
 
+    # Actual update
     for user in mal_users:
         updates = get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
