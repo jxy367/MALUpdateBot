@@ -27,6 +27,7 @@ server_users = mub_db.get_guild_users()  # Guild id and preferred channel
 anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
 
+tasks_created = False
 count = 0
 
 def get_cooldown_key(message_or_channel):
@@ -272,6 +273,7 @@ def print_status():
 
 
 async def main_update():
+    global count
     # Printing output
     #print_output()
 
@@ -292,6 +294,12 @@ async def main_update():
                     mub_db.update_guild(guild, channel.id)
                 for embed in updates:
                     await channel.send(embed=embed)
+
+    count += 1
+    count = count % 10
+    if count == 0:
+        await client.logout()
+        await client.start()
 
 
 async def reset_display_name():
@@ -452,7 +460,7 @@ async def on_guild_remove(guild):
 
 @client.event
 async def on_ready():
-    global count
+    global tasks_created
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -462,9 +470,9 @@ async def on_ready():
         if g.id not in server_channel:
             server_channel[g.id] = g.text_channels[0].id
 
-    if count == 0:
+    if not tasks_created:
         client.loop.create_task(background_update())
         client.loop.create_task(cooldown())
-        count += 1
-        
+        tasks_created = True
+
 client.run(TOKEN)
