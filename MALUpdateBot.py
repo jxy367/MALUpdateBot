@@ -14,16 +14,15 @@ import json
 TOKEN = os.environ.get('TOKEN')
 DATABASE_URL = os.environ['DATABASE_URL']
 mub_db = MUBDatabase(DATABASE_URL)
-mal_users = mub_db.get_users()
-server_channel = mub_db.get_guilds()
-server_users = mub_db.get_guild_users()
+
 client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 
 on_cooldown = {}
 cooldown_time = 10
-#mal_users = {}  # MAL usernames and (latest manga and anime)
-#server_users = {}  # Guild id and MAL usernames
-#server_channel = {}  # Guild id and preferred channel
+
+mal_users = mub_db.get_users()  # MAL usernames and (latest manga and anime)
+server_channel = mub_db.get_guilds()  # Guild id and MAL usernames
+server_users = mub_db.get_guild_users()  # Guild id and preferred channel
 
 anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
@@ -422,7 +421,13 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+    for g in client.guilds:
+        if g.id not in server_channel:
+            server_channel[g.id] = g.textchannels[0]
+
     client.loop.create_task(background_update())
     client.loop.create_task(cooldown())
+
 
 client.run(TOKEN)
