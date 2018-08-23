@@ -168,7 +168,9 @@ class MUBDatabase:
         try:
             self.cur.execute(sql)
             data = self.cur.fetchall()
+            print("MUB get users")
             for tup in data:
+                print("User: " + str(tup[0]) + ", Manga: " + str(tup[1]) + ", Anime: " + str(tup[2]))
                 users[tup[0]] = (tup[1], tup[2])
         except Exception as e:
             print(e)
