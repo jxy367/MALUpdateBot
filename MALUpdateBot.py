@@ -5,22 +5,29 @@ import os
 import urllib
 from urllib import request
 from urllib import error
+import psycopg2
+from MUBDatabase import MUBDatabase
 
 from bs4 import BeautifulSoup
 import json
 
 TOKEN = os.environ.get('TOKEN')
-
+DATABASE_URL = os.environ['DATABASE_URL']
+mub_db = MUBDatabase(DATABASE_URL)
+mal_users = mub_db.get_users()
+server_users = mub_db.get_guilds()
+server_channel = mub_db.get_guild_users()
 client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 
 on_cooldown = {}
 cooldown_time = 10
-mal_users = {}  # MAL usernames and (latest manga and anime)
-server_users = {}  # Guild id and MAL usernames
-server_channel = {}  # Guild id and preferred channel
+#mal_users = {}  # MAL usernames and (latest manga and anime)
+#server_users = {}  # Guild id and MAL usernames
+#server_channel = {}  # Guild id and preferred channel
 
 anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
+
 
 def get_cooldown_key(message_or_channel):
     global on_cooldown
@@ -170,7 +177,12 @@ def get_user_updates(user: str):
 
     updates.reverse()  # So that updates are in from oldest to newest
 
-    mal_users[user] = (manga_list[0]['manga_title'], anime_list[0]['anime_title'])
+    if len(updates) > 0:
+        manga = manga_list[0]['manga_title']
+        anime = anime_list[0]['anime_title']
+        mal_users[user] = (manga, anime)
+        mub_db.update_user(user, manga, anime)
+
     return updates
 
 
@@ -179,10 +191,13 @@ def add_user(user: str, guild_id: int):
         manga_entry = latest_entry_title(user, "manga")
         anime_entry = latest_entry_title(user, "anime")
         mal_users[user] = (manga_entry, anime_entry)
+        mub_db.add_user(user, manga_entry, anime_entry)
 
     if user not in server_users[guild_id]:
         server_users[guild_id].append(user)
+        mub_db.add_guild_user(guild_id, user)
         return True
+
     return False
 
 
@@ -191,15 +206,21 @@ def remove_user(user: str, guild_id: int):
         return False
     return_value = False
     user_in_server = False
+
     if user in server_users[guild_id]:
         server_users[guild_id].remove(user)
+        mub_db.remove_guild_user(guild_id, user)
         return_value = True
+
     for guild in server_users:
         if user in server_users[guild]:
             user_in_server = True
             break
+
     if not user_in_server:
         del mal_users[user]
+        mub_db.remove_user(user)
+
     return return_value
 
 
@@ -216,6 +237,7 @@ def remove_unnecessary_users():
 
     for unnecessary_user in unnecessary_users:
         del mal_users[unnecessary_user]
+        mub_db.remove_user(user)
 
 
 async def main_update():
@@ -373,12 +395,14 @@ async def help(ctx):
 async def on_guild_join(guild):
     server_users[guild.id] = []
     server_channel[guild.id] = guild.textchannels[0]
+    mub_db.add_guild(guild.id, guild.textchannels[0])
 
 
 @client.event
 async def on_guild_remove(guild):
     del server_users[guild.id]
     del server_channel[guild.id]
+    mub_db.remove_guild(guild)
     remove_unnecessary_users()
 
 

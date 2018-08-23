@@ -11,3 +11,4 @@ async-timeout==3.0.0
 pycparser==2.18
 bs4
 #discord.py==1.0.0a1504+gf06563c
+psycopg2-binary==2.7.5
