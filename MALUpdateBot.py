@@ -270,7 +270,7 @@ def print_status():
     print([method_name for method_name in dir(client.ws) if callable(getattr(client.ws, method_name))])
     #print("Websocket client connected: " + str(client.ws.client_connected()))
     #print("Websocket connection open: " + str(client.ws.connection_open()))
-    print("Websocket connection lost: " + str(client.ws.connection_lost()))
+    #print("Websocket connection lost: " + str(client.ws.connection_lost()))
     print("Per server: ")
     for g in client.guilds:
         print(str(g.me.status))
@@ -300,13 +300,11 @@ async def main_update():
                     await channel.send(embed=embed)
 
     count += 1
-    count = count % 10
+    count = count % 20
     print(count)
     if count == 0:
         print("Logout")
         await client.logout()
-        print("Start")
-        await client.start()
 
 
 async def reset_display_name():
