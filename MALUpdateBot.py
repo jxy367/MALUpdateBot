@@ -352,7 +352,7 @@ async def main_update():
 
     count += 1
     print(count)
-    #count = count % 20
+    count = count % 240
     print_time()
     if count == 0:
         print("Logout")
