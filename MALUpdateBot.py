@@ -131,8 +131,8 @@ def convert_anime_update_to_embed(user, update):
     if update['tags'] != '':
         embed.add_field(name="Tags: ", value=update['tags'], inline=False)
 
-    if update['is_rewatching'] != 0:
-        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=False)
+#    if update['is_rewatching'] != 0:
+#        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=False)
 
     if update['anime_media_type_string'] != 'Movie':
         if 'num_watched_episodes' in update and 'anime_num_episodes' in update:
@@ -159,8 +159,8 @@ def convert_manga_update_to_embed(user, update):
     if update['tags'] != '':
         embed.add_field(name="Tags: ", value=update['tags'], inline=False)
 
-    if update['is_rereading'] != 0:
-        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=False)
+#    if update['is_rereading'] != 0:
+#        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=False)
 
     if 'num_read_chapters' in update and 'manga_num_chapters' in update:
         read_chapters = update['num_read_chapters']
