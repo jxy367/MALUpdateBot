@@ -121,23 +121,23 @@ def convert_anime_update_to_embed(user, update):
     if 'anime_image_path' in update:
         embed.set_image(url=update['anime_image_path'])
 
-    embed.add_field(name="Type: ", value="Anime", inline=True)
+    embed.add_field(name="Type: ", value="Anime", inline=False)
 
     if update['score'] != 0:
-        embed.add_field(name="Score: ", value=str(update['score']), inline=True)
+        embed.add_field(name="Score: ", value=str(update['score']), inline=False)
 
-    embed.add_field(name="Status: ", value=anime_statuses[int(update['status'])], inline=True)
+    embed.add_field(name="Status: ", value=anime_statuses[int(update['status'])], inline=False)
 
     if update['tags'] != '':
-        embed.add_field(name="Tags: ", value=update['tags'], inline=True)
+        embed.add_field(name="Tags: ", value=update['tags'], inline=False)
 
     if update['is_rewatching'] != 0:
-        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=True)
+        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=False)
 
     if update['anime_media_type_string'] != 'Movie':
         if 'num_watched_episodes' in update and 'anime_num_episodes' in update:
             embed.add_field(name="Episodes watched: ", value=str(update['num_watched_episodes']) + "/" + str(
-                update['anime_num_episodes']), inline=True)
+                update['anime_num_episodes']), inline=False)
 
     return embed
 
@@ -149,26 +149,26 @@ def convert_manga_update_to_embed(user, update):
     if 'manga_image_path' in update:
         embed.set_image(url=update['manga_image_path'])
 
-    embed.add_field(name="Type: ", value="Manga", inline=True)
+    embed.add_field(name="Type: ", value="Manga", inline=False)
 
     if update['score'] != 0:
-        embed.add_field(name="Score: ", value=str(update['score']), inline=True)
+        embed.add_field(name="Score: ", value=str(update['score']), inline=False)
 
-    embed.add_field(name="Status: ", value=manga_statuses[int(update['status'])], inline=True)
+    embed.add_field(name="Status: ", value=manga_statuses[int(update['status'])], inline=False)
 
     if update['tags'] != '':
-        embed.add_field(name="Tags: ", value=update['tags'], inline=True)
+        embed.add_field(name="Tags: ", value=update['tags'], inline=False)
 
     if update['is_rereading'] != 0:
-        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=True)
+        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=False)
 
     if 'num_read_chapters' in update and 'manga_num_chapters' in update:
         read_chapters = update['num_read_chapters']
         num_chapters = update['manga_num_chapters']
         if read_chapters < num_chapters:
-            embed.add_field(name="Chapters read: ", value=str(read_chapters) + "/" + str(num_chapters), inline=True)
+            embed.add_field(name="Chapters read: ", value=str(read_chapters) + "/" + str(num_chapters), inline=False)
         else:
-            embed.add_field(name="Chapters read: ", value=str(read_chapters), inline=True)
+            embed.add_field(name="Chapters read: ", value=str(read_chapters), inline=False)
 
     return embed
 
@@ -321,7 +321,7 @@ def print_time():
         if sec > 1:
             time_string += "s"
 
-    if sec != 0:
+    if sec == 0:
         time_string = time_string[:-2]
 
     print(time_string)
