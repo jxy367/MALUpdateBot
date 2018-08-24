@@ -301,7 +301,7 @@ async def main_update():
 
     count += 1
     #count = count % 20
-    print(count)
+    print("Time: " + str(count))
     if count == 0:
         print("Logout")
         await client.logout()
