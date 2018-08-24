@@ -7,6 +7,7 @@ from urllib import request
 from urllib import error
 import psycopg2
 from MUBDatabase import MUBDatabase
+import time
 
 from bs4 import BeautifulSoup
 import json
@@ -29,6 +30,7 @@ manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "
 
 tasks_created = False
 count = 0
+start_time = time.time()
 
 def get_cooldown_key(message_or_channel):
     global on_cooldown
@@ -118,19 +120,24 @@ def convert_anime_update_to_embed(user, update):
     embed = discord.Embed(title=user + " updated " + title)
     if 'anime_image_path' in update:
         embed.set_image(url=update['anime_image_path'])
-    embed.add_field(name="Status: ", value=anime_statuses[int(update['status'])], inline=False)
+
+    embed.add_field(name="Type: ", value="Anime", inline=True)
+
     if update['score'] != 0:
-        embed.add_field(name="Score: ", value=str(update['score']), inline=False)
+        embed.add_field(name="Score: ", value=str(update['score']), inline=True)
+
+    embed.add_field(name="Status: ", value=anime_statuses[int(update['status'])], inline=True)
+
     if update['tags'] != '':
-        embed.add_field(name="Tags: ", value=update['tags'], inline=False)
+        embed.add_field(name="Tags: ", value=update['tags'], inline=True)
 
     if update['is_rewatching'] != 0:
-        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=False)
+        embed.add_field(name="Rewatched: ", value=str(update['is_rewatching']) + " times", inline=True)
 
     if update['anime_media_type_string'] != 'Movie':
         if 'num_watched_episodes' in update and 'anime_num_episodes' in update:
             embed.add_field(name="Episodes watched: ", value=str(update['num_watched_episodes']) + "/" + str(
-                update['anime_num_episodes']), inline=False)
+                update['anime_num_episodes']), inline=True)
 
     return embed
 
@@ -138,24 +145,30 @@ def convert_anime_update_to_embed(user, update):
 def convert_manga_update_to_embed(user, update):
     title = update['manga_title']
     embed = discord.Embed(title=user + " updated " + title)
+
     if 'manga_image_path' in update:
         embed.set_image(url=update['manga_image_path'])
-    embed.add_field(name="Status: ", value=manga_statuses[int(update['status'])], inline=False)
+
+    embed.add_field(name="Type: ", value="Manga", inline=True)
+
     if update['score'] != 0:
-        embed.add_field(name="Score: ", value=str(update['score']), inline=False)
+        embed.add_field(name="Score: ", value=str(update['score']), inline=True)
+
+    embed.add_field(name="Status: ", value=manga_statuses[int(update['status'])], inline=True)
+
     if update['tags'] != '':
-        embed.add_field(name="Tags: ", value=update['tags'], inline=False)
+        embed.add_field(name="Tags: ", value=update['tags'], inline=True)
 
     if update['is_rereading'] != 0:
-        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=False)
+        embed.add_field(name="Reread: ", value=str(update['is_rereading']) + " times", inline=True)
 
     if 'num_read_chapters' in update and 'manga_num_chapters' in update:
         read_chapters = update['num_read_chapters']
         num_chapters = update['manga_num_chapters']
         if read_chapters < num_chapters:
-            embed.add_field(name="Chapters read: ", value=str(read_chapters) + "/" + str(num_chapters), inline=False)
+            embed.add_field(name="Chapters read: ", value=str(read_chapters) + "/" + str(num_chapters), inline=True)
         else:
-            embed.add_field(name="Chapters read: ", value=str(read_chapters), inline=False)
+            embed.add_field(name="Chapters read: ", value=str(read_chapters), inline=True)
 
     return embed
 
@@ -276,6 +289,44 @@ def print_status():
         print(str(g.me.status))
 
 
+def print_time():
+    global start_time
+    current_time = time.time()
+    duration = (current_time - start_time)//1
+    sec = duration % 60
+    min = (duration % (60 * 60)) // 60
+    hour = (duration % (24 * 60 * 60)) // (60 * 60)
+    day = duration // (24 * 60 * 60)
+    time_string = "Duration: "
+    if day > 0:
+        time_string += str(day) + " day"
+        if day > 1:
+            time_string += "s"
+        time_string += ", "
+
+    if hour > 0:
+        time_string += str(hour) + " hour"
+        if hour > 1:
+            time_string += "s"
+        time_string += ", "
+
+    if min > 0:
+        time_string += str(min) + " minute"
+        if min > 1:
+            time_string += "s"
+        time_string += ", "
+
+    if sec > 0:
+        time_string += str(sec) + " second"
+        if sec > 1:
+            time_string += "s"
+
+    if sec != 0:
+        time_string = time_string[:-2]
+
+    print(time_string)
+
+
 async def main_update():
     global count
     # Printing output
@@ -300,8 +351,9 @@ async def main_update():
                     await channel.send(embed=embed)
 
     count += 1
+    print(count)
     #count = count % 20
-    print("Time: " + str(count))
+    print_time()
     if count == 0:
         print("Logout")
         await client.logout()
