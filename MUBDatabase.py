@@ -18,10 +18,12 @@ class MUBDatabase:
     guild_users_table = {"table_name": "guild_users", "guild": "id", "user": "name"}
 
     def __init__(self, db_url: str):
+        self.db_url = db_url
         self.conn = psycopg2.connect(db_url, sslmode='require')
         self.cur = self.conn.cursor()
 
     def check_value(self, table: int, check_item: str, value):
+        self.check_connection()
         if table == 1:
             table_dictionary = self.user_table
         elif table == 2:
@@ -45,6 +47,7 @@ class MUBDatabase:
         return self.cur.fetchone()[0][0]
 
     def add_guild_user(self, guild: int, user: str):
+        self.check_connection()
         sql = """INSERT INTO guild_users(id, name) VALUES(%s, %s);"""
         try:
             self.cur.execute(sql, (guild, user))
@@ -58,6 +61,7 @@ class MUBDatabase:
         return True
 
     def add_user(self, user: str, anime: str, manga: str):
+        self.check_connection()
         sql = """INSERT INTO users(name, last_anime, last_manga) VALUES(%s, %s, %s);"""
         try:
             self.cur.execute(sql, (user, anime, manga))
@@ -71,6 +75,7 @@ class MUBDatabase:
         return True
 
     def add_guild(self, guild: int, channel_id: int):
+        self.check_connection()
         sql = """INSERT INTO guilds(id, channel_id) VALUES(%s, %s);"""
         try:
             self.cur.execute(sql, (guild, channel_id))
@@ -84,6 +89,7 @@ class MUBDatabase:
         return True
 
     def remove_guild_user(self, guild: int, user: str):
+        self.check_connection()
         sql = """DELETE FROM guild_users WHERE id = %s AND name = %s;"""
         try:
             self.cur.execute(sql, (guild, user))
@@ -97,6 +103,7 @@ class MUBDatabase:
         return True
 
     def remove_guild_users(self, guild: int):
+        self.check_connection()
         sql = """DELETE FROM guild_users WHERE id = %s"""
         try:
             self.cur.execute(sql, (guild,))
@@ -110,6 +117,7 @@ class MUBDatabase:
         return True
 
     def remove_user(self, user: str):
+        self.check_connection()
         sql = """DELETE FROM users WHERE name = %s;"""
         try:
             self.cur.execute(sql, (user,))
@@ -123,6 +131,7 @@ class MUBDatabase:
         return True
 
     def remove_guild(self, guild: int):
+        self.check_connection()
         sql = """DELETE FROM guild_users WHERE id = %s);"""
         try:
             self.remove_guild_users(guild)
@@ -137,6 +146,7 @@ class MUBDatabase:
         return True
 
     def update_user(self, user: str, anime: str, manga: str):
+        self.check_connection()
         sql = """UPDATE users SET last_anime = %s, last_manga = %s WHERE name = %s"""
         try:
             self.cur.execute(sql, (anime, manga, user))
@@ -150,6 +160,7 @@ class MUBDatabase:
         return True
 
     def update_guild(self, guild: int, channel: int):
+        self.check_connection()
         sql = """UPDATE guilds SET channel_id = %s WHERE id = %s"""
         try:
             self.cur.execute(sql, (channel, guild))
@@ -163,6 +174,7 @@ class MUBDatabase:
         return True
 
     def get_users(self):
+        self.check_connection()
         users = {}
         sql = """SELECT * from users"""
         try:
@@ -176,6 +188,7 @@ class MUBDatabase:
         return users
 
     def get_guilds(self):
+        self.check_connection()
         guilds = {}
         sql = """SELECT * from guilds"""
         try:
@@ -189,6 +202,7 @@ class MUBDatabase:
         return guilds
 
     def get_guild_users(self):
+        self.check_connection()
         guild_users = {}
         sql = """SELECT * from guild_users"""
         try:
@@ -204,7 +218,13 @@ class MUBDatabase:
             print("Failed to get guild users")
         return guild_users
 
-
+    def check_connection(self):
+        print("Connection closed: " + str(self.conn.closed))
+        if self.conn.closed != 0:
+            self.cur.close()
+            self.conn.close()
+            self.conn = psycopg2.connect(self.db_url, sslmode='require')
+            self.cur = self.conn.cursor()
 
 #    def synchronize(self, mal_users, server_users, server_channels):
 #        synchronize_users(mal_users)
