@@ -300,7 +300,7 @@ async def main_update():
                     await channel.send(embed=embed)
 
     count += 1
-    count = count % 20
+    #count = count % 20
     print(count)
     if count == 0:
         print("Logout")
