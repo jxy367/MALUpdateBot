@@ -98,7 +98,6 @@ def mal_list(user: str, list_type: str):
             print("Start table.get in mal_list")
             blah = table.get('data-items')
             print("End table.get in mal_list")
-        print("blah in mal_list: " + str(blah))
         print("Start json.loads in mal_list")
         user_list = json.loads(blah)
         print("End json.loads in mal_list")
