@@ -12,6 +12,7 @@ import time
 from bs4 import BeautifulSoup
 import json
 
+print("Start basic information gathering in main")
 TOKEN = os.environ.get('TOKEN')
 DATABASE_URL = os.environ['DATABASE_URL']
 mub_db = MUBDatabase(DATABASE_URL)
@@ -32,6 +33,8 @@ tasks_created = False
 count = 0
 start_time = time.time()
 
+print("End basic information gathering in main")
+
 def get_cooldown_key(message_or_channel):
     global on_cooldown
     try:
@@ -49,21 +52,27 @@ def get_cooldown_key(message_or_channel):
 
 
 def get_current_cooldown(message_or_channel):
+    print("Start get_cooldown_key in get_current_cooldown")
     key = get_cooldown_key(message_or_channel)
+    print("End get_cooldown_key in get_current_cooldown")
     return on_cooldown[key]
 
 
 def reset_cooldown(message_or_channel):
     global on_cooldown
     global cooldown_time
+    print("Start get_cooldown_key in reset_cooldown")
     key = get_cooldown_key(message_or_channel)
+    print("End get_cooldown_key in reset_cooldown")
     on_cooldown[key] = cooldown_time
 
 
 def is_mal_user(user: str):
     url = "https://myanimelist.net/profile/" + user
     try:
+        print("Start urllib.request.urlopen in is_mal_user")
         response = urllib.request.urlopen(url)
+        print("End urllib.request.urlopen in is_mal_user")
         return True
     except urllib.error.HTTPError:
         return False
@@ -72,29 +81,47 @@ def is_mal_user(user: str):
 def mal_list(user: str, list_type: str):
     url = "https://myanimelist.net/" + list_type + "list/" + user + "?order=5&status=7"
     try:
+        print("Start urllib.request.urlopen in mal_list")
         response = urllib.request.urlopen(url)
+        print("End urllib.request.urlopen in mal_list")
+        print("Start response.read in mal_list")
         html = response.read()
+        print("End response.read in mal_list")
+        print("Start BeautifulSoup in mal_list")
         soup = BeautifulSoup(html, "html.parser")
+        print("End BeautifulSoup in mal_list")
+        print("Start soup.find in mal_list")
         table = soup.find(attrs={"class": "list-table"})
+        print("End soup.find in mal_list")
         blah = "woo"
         if table.has_attr('data-items'):
+            print("Start table.get in mal_list")
             blah = table.get('data-items')
+            print("End table.get in mal_list")
+        print("blah in mal_list: " + str(blah))
+        print("Start json.loads in mal_list")
         user_list = json.loads(blah)
+        print("End json.loads in mal_list")
         return user_list
     except urllib.error.HTTPError:
-        print("WAAAA")
+        print("urllib.error.HTTPError occurred in mal_list")
+    print("Error occurred in mal_list, error should be above")
     return []
 
 
 def latest_entry(user: str, list_type: str):
+    print("Start mal_list in latest_entry")
     user_list = mal_list(user, list_type)
+    print("End mal_list in latest_entry")
     if len(user_list) > 0:
         return user_list[0]
     return ""
 
 
 def latest_entry_title(user: str, list_type: str):
+    print("Start latest_entry in latest_entry_title")
     entry = latest_entry(user, list_type)
+    print("End latest_entry in latest_entry title")
     if entry == "":
         return ""
     else:
@@ -105,13 +132,17 @@ def convert_updates_to_embeds(user, updates):
     embeds = []
     for update in updates:
         if 'anime_title' in update:
+            print("Start convert_anime_update_to_embed in convert_update_to_embeds")
             embed = convert_anime_update_to_embed(user, update)
+            print("End convert_anime_update_to_embed in convert_update_to_embeds")
             embeds.append(embed)
         elif 'manga_title' in update:
+            print("Start convert_manga_update_to_embed in convert_update_to_embeds")
             embed = convert_manga_update_to_embed(user, update)
+            print("Start convert_manga_update_to_embed in convert_update_to_embeds")
             embeds.append(embed)
         else:
-            print("welp")
+            print("An update was not 'anime_title' or 'manga_title' in convert_updates_to_embeds")
     return embeds
 
 
@@ -176,8 +207,12 @@ def convert_manga_update_to_embed(user, update):
 def get_user_updates(user: str):
     updates = []
     last_anime_entry, last_manga_entry = mal_users[user]
+    print("Start mal_list('anime') in get_user_updates")
     anime_list = mal_list(user, "anime")
+    print("End mal_list('anime') in get_user_updates")
+    print("Start mal_list('manga') in get_user_updates")
     manga_list = mal_list(user, "manga")
+    print("End mal_list('manga') in get_user_updates")
 
     for anime_entry in anime_list:
         if anime_entry['anime_title'] == last_anime_entry:
@@ -203,21 +238,31 @@ def get_user_updates(user: str):
         anime = anime_list[0]['anime_title']
         manga = manga_list[0]['manga_title']
         mal_users[user] = (anime, manga)
+        print("Start mub_db.update_user in get_user_updates")
         mub_db.update_user(user, anime, manga)
+        print("End mub_db.update_user in get_user_updates")
 
     return updates
 
 
 def add_user(user: str, guild_id: int):
     if user not in mal_users:
+        print("Start latest_entry_title('anime') in add_user")
         anime_entry = latest_entry_title(user, "anime")
+        print("End latest_entry_title('anime') in add_user")
+        print("Start latest_entry_title('manga') in add_user")
         manga_entry = latest_entry_title(user, "manga")
+        print("End latest_entry_title('manga') in add_user")
         mal_users[user] = (anime_entry, manga_entry)
+        print("Start mub_db.add_user in add_user")
         mub_db.add_user(user, anime_entry, manga_entry)
+        print("End mub_db.add_user in add_user")
 
     if user not in server_users[guild_id]:
         server_users[guild_id].append(user)
+        print("Start mub.db.add_guild_user in add_user")
         mub_db.add_guild_user(guild_id, user)
+        print("End mub.db.add_guild_user in add_user")
         return True
 
     return False
@@ -231,7 +276,9 @@ def remove_user(user: str, guild_id: int):
 
     if user in server_users[guild_id]:
         server_users[guild_id].remove(user)
+        print("Start mub_db.remove_guild_user in remove_user")
         mub_db.remove_guild_user(guild_id, user)
+        print("End mub_db.remove_guild_user in remove_user")
         return_value = True
 
     for guild in server_users:
@@ -241,7 +288,9 @@ def remove_user(user: str, guild_id: int):
 
     if not user_in_server:
         del mal_users[user]
+        print("Start mub_db.remove_user in remove_user")
         mub_db.remove_user(user)
+        print("End mub_db.remove_user in remove_user")
 
     return return_value
 
@@ -259,7 +308,9 @@ def remove_unnecessary_users():
 
     for unnecessary_user in unnecessary_users:
         del mal_users[unnecessary_user]
+        print("Start mub_db.remove_user in remove_unnecessary_users")
         mub_db.remove_user(user)
+        print("End mub_db.remove_user in remove_unnecessary_users")
 
 
 def print_values():
@@ -293,10 +344,10 @@ def print_time():
     global start_time
     current_time = time.time()
     duration = (current_time - start_time)//1
-    sec = duration % 60
-    min = (duration % (60 * 60)) // 60
-    hour = (duration % (24 * 60 * 60)) // (60 * 60)
-    day = duration // (24 * 60 * 60)
+    sec = int(duration % 60)
+    min = int((duration % (60 * 60)) // 60)
+    hour = int((duration % (24 * 60 * 60)) // (60 * 60))
+    day = int(duration // (24 * 60 * 60))
     time_string = "Duration: "
     if day > 0:
         time_string += str(day) + " day"
@@ -330,15 +381,21 @@ def print_time():
 async def main_update():
     global count
     # Printing output
+    print("Start print_values in main_update")
     print_values()
+    print("End print_values in main_update")
 
     # Printing status
     #print_status()
 
     # Actual update
     for user in mal_users:
+        print("Start get_user_updates in main_update")
         updates = get_user_updates(user)
+        print("End get_user_updates in main_update")
+        print("Start convert_updates_to_embeds in main_update")
         updates = convert_updates_to_embeds(user, updates)
+        print("End convert_updates_to_embeds in main_update")
         for guild in server_users:
             if user in server_users[guild]:
                 hold_channel = server_channel[guild]
@@ -356,7 +413,9 @@ async def main_update():
     print_time()
     if count == 0:
         print("Logout")
+        print("Start client.logout in main_update")
         await client.logout()
+        print("End client.logout in main_update")
 
 
 async def reset_display_name():
@@ -371,9 +430,15 @@ async def reset_display_name():
 async def background_update():
     await client.wait_until_ready()
     while not client.is_closed():
+        print("Start main_update in background_update")
         await main_update()
+        print("End main_update in background_update")
+        print("Start reset_display_name in background_update")
         await reset_display_name()
+        print("End reset_display_name in background_update")
+        print("Start asyncio.sleep in background_update")
         await asyncio.sleep(60)
+        print("End asyncio.sleep in background_update")
 
 
 async def cooldown():
@@ -394,8 +459,9 @@ async def await_message(message: discord.Message, content=None, embed=None):
         await message.channel.send(content=content)
     else:
         await message.channel.send(content=content+"!!", embed=embed)
-
+    print("Start reset_cooldown in await_message")
     reset_cooldown(message)
+    print("End reset_cooldown in await_message")
 
 
 async def await_channel(channel: discord.TextChannel, content=None, embed=None):
@@ -407,7 +473,9 @@ async def await_channel(channel: discord.TextChannel, content=None, embed=None):
         else:
             await channel.send(content=content, embed=embed)
 
+    print("Start reset_cooldown in await_channel")
     reset_cooldown(channel)
+    print("End reset_cooldown in await_channel")
 
 
 async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None):
@@ -418,7 +486,9 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
     else:
         await ctx.send(content=content, embed=embed)
 
+    print("Start reset_cooldown in await_ctx")
     reset_cooldown(ctx.channel)
+    print("End reset_cooldown in await_ctx")
 
 
 @client.event
@@ -426,7 +496,9 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    print("Start client.process_commands in on_message")
     await client.process_commands(message)
+    print("End client.process_commands in on_message")
 
 
 @client.command()
@@ -439,10 +511,12 @@ async def add(ctx, *, user):
         server_channel[ctx.guild.id] = ctx.channel.id
 
     if is_mal_user(user):
+        print("Start add_user in add")
         if add_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content=user + " successfully added")
         else:
             await await_ctx(ctx=ctx, content="User, " + user + ", already in list of users")
+        print("End add_user in add")
     else:
         await await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
@@ -451,10 +525,12 @@ async def add(ctx, *, user):
 async def remove(ctx, *, user):
     user = user.lower()
     if user in mal_users:
+        print("Start remove_user in remove")
         if remove_user(user, ctx.guild.id):
             await await_ctx(ctx=ctx, content="User successfully removed")
         else:
             await await_ctx(ctx=ctx, content="User, " + user + ", could not be removed")
+        print("End remove_user in remove")
     else:
         await await_ctx(ctx=ctx, content="User, " + user + ", could not be found")
 
@@ -462,7 +538,9 @@ async def remove(ctx, *, user):
 @client.command()
 async def set_channel(ctx):
     server_channel[ctx.guild.id] = ctx.channel.id
+    print("Start mub.db.update_guild in set_channel")
     mub_db.update_guild(ctx.guild.id, ctx.channel.id)
+    print("End mub.db.update_guild in set_channel")
     await await_ctx(ctx=ctx, content="This channel will receive updates.")
 
 
@@ -484,7 +562,9 @@ async def users(ctx):
     else:
         await await_ctx(ctx=ctx, content="This server has not added any users")
 
+print("Start client.remove_command in main")
 client.remove_command('help')
+print("End client.remove_command in main")
 
 
 @client.command()
@@ -504,15 +584,21 @@ async def help(ctx):
 async def on_guild_join(guild):
     server_users[guild.id] = []
     server_channel[guild.id] = guild.textchannels[0]
+    print("Start mub_db.add_guild in on_guild_join")
     mub_db.add_guild(guild.id, guild.textchannels[0])
+    print("End mub_db.add_guild in on guild_join")
 
 
 @client.event
 async def on_guild_remove(guild):
     del server_users[guild.id]
     del server_channel[guild.id]
+    print("Start mub_db.remove_guild in on_guild_remove")
     mub_db.remove_guild(guild)
+    print("End mub_db.remove_guild in on_guild_remove")
+    print("Start remove_unnecessary_users in on_guild_remove")
     remove_unnecessary_users()
+    print("End remove_unnecessary_users in on_guild_remove")
 
 
 @client.event
@@ -526,11 +612,19 @@ async def on_ready():
     for g in client.guilds:
         if g.id not in server_channel:
             server_channel[g.id] = g.text_channels[0].id
+            print("Start mub_db.add_guild in on_ready")
             mub_db.add_guild(g.id, g.text_channels[0].id)
+            print("End mub_db.add_guild in on_ready")
 
     if not tasks_created:
+        print("Start client.loop.create_task(background_update) in on_ready")
         client.loop.create_task(background_update())
+        print("End client.loop.create_task(background_update) in on_ready")
+        print("Start client.loop.create_task(cooldown) in on_ready")
         client.loop.create_task(cooldown())
+        print("End client.loop.create_task(cooldown) in on_ready")
         tasks_created = True
 
+print("Start client.run in main")
 client.run(TOKEN)
+print("End client.run in main")
