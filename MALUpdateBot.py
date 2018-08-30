@@ -151,6 +151,10 @@ def convert_anime_update_to_embed(user, update):
     if 'anime_image_path' in update:
         embed.set_image(url=update['anime_image_path'])
 
+    if 'anime_url' in update:
+        url = "https://myanimelist.net" + str(update['anime_url'])
+        embed.add_field(name="URL: ", value=url, inline=False)
+
     embed.add_field(name="Type: ", value="Anime", inline=False)
 
     if update['score'] != 0:
@@ -175,9 +179,12 @@ def convert_anime_update_to_embed(user, update):
 def convert_manga_update_to_embed(user, update):
     title = update['manga_title']
     embed = discord.Embed(title=user + " updated " + title)
-
     if 'manga_image_path' in update:
         embed.set_image(url=update['manga_image_path'])
+
+    if 'manga_url' in update:
+        url = "https://myanimelist.net" + str(update['manga_url'])
+        embed.add_field(name="URL: ", value=url, inline=False)
 
     embed.add_field(name="Type: ", value="Manga", inline=False)
 
@@ -407,7 +414,7 @@ async def main_update():
                     await channel.send(embed=embed)
 
     count += 1
-    print(count)
+    print("Count: " + str(count))
     count = count % 240
     print_time()
     if count == 0:
