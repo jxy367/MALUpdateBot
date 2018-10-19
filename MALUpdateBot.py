@@ -225,6 +225,10 @@ def get_user_updates(user: str):
             break
 
         updates.append(anime_entry)
+        if len(updates) > 20:
+            print("User: ", user)
+            print("Last anime entry: ", last_anime_entry)
+            break
 
         if last_anime_entry == "":
             break
