@@ -223,16 +223,22 @@ def attempt_update_retrieval(user: str, attempt_number: int):
         if last_manga_entry == "":
             break
 
-    if len(updates) > 20:  # Check if MAL has sent incorrectly sorted page
+    updates.reverse()  # So that updates are in from oldest to newest
+
+    if len(updates) > 30:  # Check if MAL has sent incorrectly sorted page
         if attempt_number < 5:
             return [False]  # Failure
         else:
+            # In case someone actually updated with 30+ items
+            anime = anime_list[0]['anime_title']  # Most recent anime title
+            manga = manga_list[0]['manga_title']  # Most recent manga title
+            mal_users[user] = (anime, manga)  # Update in dictionary
+            mub_db.update_user(user, anime, manga)  # Update in database
+
+            # Regardless, won't send incorrect information
             updates = []  # Prefer to send no incorrect information.
 
     if len(updates) > 0:
-
-        updates.reverse()  # So that updates are in from oldest to newest
-
         anime = anime_list[0]['anime_title']  # Most recent anime title
         manga = manga_list[0]['manga_title']  # Most recent manga title
         mal_users[user] = (anime, manga)  # Update in dictionary
