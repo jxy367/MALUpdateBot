@@ -456,6 +456,7 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
 
 @client.event
 async def on_message(message):
+    print("On message")
     if message.author.bot:
         return
 
@@ -464,6 +465,7 @@ async def on_message(message):
 
 @client.command()
 async def add(ctx, *, user):
+    print("Add")
     user = user.lower()
     if ctx.guild.id not in server_users:
         server_users[ctx.guild.id] = []
@@ -482,6 +484,7 @@ async def add(ctx, *, user):
 
 @client.command()
 async def remove(ctx, *, user):
+    print("remove")
     user = user.lower()
     if user in mal_users:
         if remove_user(user, ctx.guild.id):
@@ -494,6 +497,7 @@ async def remove(ctx, *, user):
 
 @client.command()
 async def set_channel(ctx):
+    print("set channel")
     server_channel[ctx.guild.id] = ctx.channel.id
     mub_db.update_guild(ctx.guild.id, ctx.channel.id)
     await await_ctx(ctx=ctx, content="This channel will receive updates.")
@@ -501,6 +505,7 @@ async def set_channel(ctx):
 
 @client.command()
 async def users(ctx):
+    print("users")
     if ctx.guild.id not in server_channel:
         server_channel[ctx.guild.id] = ctx.channel.id
 
@@ -522,6 +527,7 @@ client.remove_command('help')
 
 @client.command()
 async def help(ctx):
+    print("help")
     embed = discord.Embed(title="MAL Update Bot", description="List of commands:", color=0xeee657)
 
     embed.add_field(name="MUB add *username*", value="Attempts to add a user to keep track of", inline=False)
