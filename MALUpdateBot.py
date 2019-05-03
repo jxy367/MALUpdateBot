@@ -70,9 +70,9 @@ def reset_cooldown(message_or_channel):
 def is_mal_user(user: str):
     url = "https://myanimelist.net/profile/" + user
     try:
-        #print("Start urllib.request.urlopen in is_mal_user")
+        print("Start urllib.request.urlopen in is_mal_user")
         response = urllib.request.urlopen(url)
-        #print("End urllib.request.urlopen in is_mal_user")
+        print("End urllib.request.urlopen in is_mal_user")
         return True
     except urllib.error.HTTPError:
         return False
@@ -225,6 +225,7 @@ def get_user_updates(user: str):
             break
 
         updates.append(anime_entry)
+
         if len(updates) > 20:
             print("User: ", user)
             print("Last anime entry: ", last_anime_entry)
@@ -238,6 +239,11 @@ def get_user_updates(user: str):
             break
 
         updates.append(manga_entry)
+
+        if len(updates) > 40:
+            print("User: ", user)
+            print("Last manga entry: ", last_manga_entry)
+            break
 
         if last_manga_entry == "":
             break
@@ -430,7 +436,7 @@ async def main_update():
 
 async def reset_display_name():
     for changed_guild in client.guilds:
-        if changed_guild.me.display_name != "MAL Update Bot":
+        if changed_guild.me is not None and changed_guild.me.display_name != "MAL Update Bot":
             print(changed_guild.name)
             print(changed_guild.me.display_name)
             print("---")
@@ -513,6 +519,7 @@ async def on_message(message):
 
 @client.command()
 async def add(ctx, *, user):
+    print("Command: add")
     user = user.lower()
     if ctx.guild.id not in server_users:
         server_users[ctx.guild.id] = []
@@ -533,6 +540,7 @@ async def add(ctx, *, user):
 
 @client.command()
 async def remove(ctx, *, user):
+    print("Command: remove")
     user = user.lower()
     if user in mal_users:
         #print("Start remove_user in remove")
@@ -547,6 +555,7 @@ async def remove(ctx, *, user):
 
 @client.command()
 async def set_channel(ctx):
+    print("Command: set_channel")
     server_channel[ctx.guild.id] = ctx.channel.id
     #print("Start mub.db.update_guild in set_channel")
     mub_db.update_guild(ctx.guild.id, ctx.channel.id)
@@ -556,6 +565,7 @@ async def set_channel(ctx):
 
 @client.command()
 async def users(ctx):
+    print("Command: users")
     if ctx.guild.id not in server_channel:
         server_channel[ctx.guild.id] = ctx.channel.id
 
@@ -572,9 +582,7 @@ async def users(ctx):
     else:
         await await_ctx(ctx=ctx, content="This server has not added any users")
 
-#print("Start client.remove_command in main")
 client.remove_command('help')
-#print("End client.remove_command in main")
 
 
 @client.command()
