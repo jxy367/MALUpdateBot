@@ -395,7 +395,7 @@ async def main_update():
 
 async def reset_display_name():
     for changed_guild in client.guilds:
-        if changed_guild.me.display_name != "MAL Update Bot":
+        if changed_guild.me is not None and changed_guild.me.display_name != "MAL Update Bot":
             print(changed_guild.name)
             print(changed_guild.me.display_name)
             print("---")
