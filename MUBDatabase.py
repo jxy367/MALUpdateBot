@@ -52,9 +52,8 @@ class MUBDatabase:
             self.cur.execute(sql, (guild, user))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("Guild user was not added")
             return False
         return True
@@ -66,9 +65,8 @@ class MUBDatabase:
             self.cur.execute(sql, (user, anime, manga))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("User was not added")
             return False
         return True
@@ -80,9 +78,8 @@ class MUBDatabase:
             self.cur.execute(sql, (guild, channel_id))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("Guild was not added")
             return False
         return True
@@ -94,9 +91,8 @@ class MUBDatabase:
             self.cur.execute(sql, (guild, user))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("Guild user was not removed")
             return False
         return True
@@ -108,9 +104,8 @@ class MUBDatabase:
             self.cur.execute(sql, (guild,))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("Guild users were not removed")
             return False
         return True
@@ -122,9 +117,8 @@ class MUBDatabase:
             self.cur.execute(sql, (user,))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("User was not removed")
             return False
         return True
@@ -137,9 +131,8 @@ class MUBDatabase:
             self.cur.execute(sql, (guild,))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("Guild was not removed")
             return False
         return True
@@ -151,9 +144,8 @@ class MUBDatabase:
             self.cur.execute(sql, (anime, manga, user))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("User was not updated")
             return False
         return True
@@ -165,9 +157,8 @@ class MUBDatabase:
             self.cur.execute(sql, (channel, guild))
             self.conn.commit()
 
-        except Exception as e:
+        except:
             self.conn.rollback()
-            print(e)
             print("Guild was not updated")
             return False
         return True
@@ -181,8 +172,7 @@ class MUBDatabase:
             data = self.cur.fetchall()
             for tup in data:
                 users[tup[0]] = (tup[1], tup[2])
-        except Exception as e:
-            print(e)
+        except:
             print("Failed to get users")
         return users
 
@@ -195,8 +185,7 @@ class MUBDatabase:
             data = self.cur.fetchall()
             for tup in data:
                 guilds[tup[0]] = tup[1]
-        except Exception as e:
-            print(e)
+        except:
             print("Failed to get guilds")
         return guilds
 
@@ -212,8 +201,7 @@ class MUBDatabase:
                     guild_users[tup[0]].append(tup[1])
                 else:
                     guild_users[tup[0]] = [tup[1]]
-        except Exception as e:
-            print(e)
+        except:
             print("Failed to get guild users")
         return guild_users
 
