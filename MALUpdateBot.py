@@ -5,7 +5,6 @@ import os
 import urllib
 from urllib import request
 from urllib import error
-import psycopg2
 from MUBDatabase import MUBDatabase
 import time
 
@@ -67,13 +66,13 @@ def reset_cooldown(message_or_channel):
 def is_mal_user(user: str):
     url = "https://myanimelist.net/profile/" + user
     try:
-        response = urllib.request.urlopen(url)
+        urllib.request.urlopen(url)
         return True
     except urllib.error.HTTPError:
         return False
 
 
-def mal_list(user: str, list_type: str):
+async def mal_list(user: str, list_type: str):
     url = "https://myanimelist.net/" + list_type + "list/" + user + "?order=5&status=7"
     try:
         response = urllib.request.urlopen(url)
@@ -92,18 +91,15 @@ def mal_list(user: str, list_type: str):
 
 
 def latest_entry(user: str, list_type: str):
-    user_list = mal_list(user, list_type)
+    user_list = await mal_list(user, list_type)
     if len(user_list) > 0:
         return user_list[0]
-    return ""
+    return {list_type + '_title': ""}
 
 
 def latest_entry_title(user: str, list_type: str):
     entry = latest_entry(user, list_type)
-    if entry == "":
-        return ""
-    else:
-        return entry[list_type + '_title']
+    return entry[list_type + '_title']
 
 
 def convert_updates_to_embeds(user, updates):
@@ -185,12 +181,12 @@ def convert_manga_update_to_embed(user, update):
     return embed
 
 
-def get_user_updates(user: str):
+async def get_user_updates(user: str):
     attempt_number = 1
     continue_loop = True
     updates = []
     while continue_loop:
-        updates = attempt_update_retrieval(user, attempt_number)
+        updates = await attempt_update_retrieval(user, attempt_number)
         if len(updates) == 0 or updates[0] is not False:
             continue_loop = False
         else:
@@ -199,11 +195,11 @@ def get_user_updates(user: str):
     return updates
 
 
-def attempt_update_retrieval(user: str, attempt_number: int):
+async def attempt_update_retrieval(user: str, attempt_number: int):
     updates = []
     last_anime_entry, last_manga_entry = mal_users[user]
-    anime_list = mal_list(user, "anime")
-    manga_list = mal_list(user, "manga")
+    anime_list = await mal_list(user, "anime")
+    manga_list = await mal_list(user, "manga")
 
     for anime_entry in anime_list:
         if anime_entry['anime_title'] == last_anime_entry:
@@ -298,7 +294,7 @@ def remove_unnecessary_users():
 
     for unnecessary_user in unnecessary_users:
         del mal_users[unnecessary_user]
-        mub_db.remove_user(user)
+        mub_db.remove_user(unnecessary_user)
 
 
 def print_values():
@@ -331,7 +327,7 @@ def print_time():
     current_time = time.time()
     duration = (current_time - start_time)//1
     sec = int(duration % 60)
-    min = int((duration % (60 * 60)) // 60)
+    minute = int((duration % (60 * 60)) // 60)
     hour = int((duration % (24 * 60 * 60)) // (60 * 60))
     day = int(duration // (24 * 60 * 60))
     time_string = "Duration: "
@@ -347,9 +343,9 @@ def print_time():
             time_string += "s"
         time_string += ", "
 
-    if min > 0:
-        time_string += str(min) + " minute"
-        if min > 1:
+    if minute > 0:
+        time_string += str(minute) + " minute"
+        if minute > 1:
             time_string += "s"
         time_string += ", "
 
@@ -371,7 +367,7 @@ async def main_update():
 
     # Actual update
     for user in mal_users:
-        updates = get_user_updates(user)
+        updates = await get_user_updates(user)
         updates = convert_updates_to_embeds(user, updates)
         for guild in server_users:
             if user in server_users[guild]:
@@ -572,4 +568,5 @@ async def on_ready():
         client.loop.create_task(cooldown())
         tasks_created = True
 
-client.run(TOKEN)
+if __name__ == "__main__":
+    client.run(TOKEN)

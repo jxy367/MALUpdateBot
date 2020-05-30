@@ -33,7 +33,6 @@ class MUBDatabase:
         else:
             raise ValueError("Check value received unexpected integer")
 
-        sql = ""
         if check_item == "guild" or check_item == "channel":
             sql = """SELECT EXISTS (SELECT * FROM """ + table_dictionary["table_name"] + """ WHERE ("""\
                   + table_dictionary[check_item] + """" = %d));"""
