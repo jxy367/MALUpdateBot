@@ -21,9 +21,9 @@ client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 on_cooldown = {}
 cooldown_time = 10
 
-mal_users = mub_db.get_users()  # MAL usernames and (latest anime and manga)
-server_channel = mub_db.get_guilds()  # Guild id and MAL usernames
-server_users = mub_db.get_guild_users()  # Guild id and preferred channel
+mal_users = await mub_db.get_users()  # MAL usernames and (latest anime and manga)
+server_channel = await mub_db.get_guilds()  # Guild id and MAL usernames
+server_users = await mub_db.get_guild_users()  # Guild id and preferred channel
 
 anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
@@ -229,7 +229,7 @@ async def attempt_update_retrieval(user: str, attempt_number: int):
             anime = anime_list[0]['anime_title']  # Most recent anime title
             manga = manga_list[0]['manga_title']  # Most recent manga title
             mal_users[user] = (anime, manga)  # Update in dictionary
-            mub_db.update_user(user, anime, manga)  # Update in database
+            await mub_db.update_user(user, anime, manga)  # Update in database
 
             # Regardless, won't send incorrect information
             updates = []  # Prefer to send no incorrect information.
@@ -238,7 +238,7 @@ async def attempt_update_retrieval(user: str, attempt_number: int):
         anime = anime_list[0]['anime_title']  # Most recent anime title
         manga = manga_list[0]['manga_title']  # Most recent manga title
         mal_users[user] = (anime, manga)  # Update in dictionary
-        mub_db.update_user(user, anime, manga)  # Update in database
+        await mub_db.update_user(user, anime, manga)  # Update in database
 
     return updates
 
@@ -248,11 +248,11 @@ async def add_user(user: str, guild_id: int):
         anime_entry = await latest_entry_title(user, "anime")
         manga_entry = await latest_entry_title(user, "manga")
         mal_users[user] = (anime_entry, manga_entry)
-        mub_db.add_user(user, anime_entry, manga_entry)
+        await mub_db.add_user(user, anime_entry, manga_entry)
 
     if user not in server_users[guild_id]:
         server_users[guild_id].append(user)
-        mub_db.add_guild_user(guild_id, user)
+        await mub_db.add_guild_user(guild_id, user)
         return True
 
     return False
@@ -266,7 +266,7 @@ def remove_user(user: str, guild_id: int):
 
     if user in server_users[guild_id]:
         server_users[guild_id].remove(user)
-        mub_db.remove_guild_user(guild_id, user)
+        await mub_db.remove_guild_user(guild_id, user)
         return_value = True
 
     for guild in server_users:
@@ -276,7 +276,7 @@ def remove_user(user: str, guild_id: int):
 
     if not user_in_server:
         del mal_users[user]
-        mub_db.remove_user(user)
+        await mub_db.remove_user(user)
 
     return return_value
 
@@ -294,7 +294,7 @@ def remove_unnecessary_users():
 
     for unnecessary_user in unnecessary_users:
         del mal_users[unnecessary_user]
-        mub_db.remove_user(unnecessary_user)
+        await mub_db.remove_user(unnecessary_user)
 
 
 def print_values():
@@ -376,7 +376,7 @@ async def main_update():
                 if channel is None:
                     channel = client.get_guild(guild).text_channels[0]
                     server_channel[guild] = channel.id
-                    mub_db.update_guild(guild, channel.id)
+                    await mub_db.update_guild(guild, channel.id)
                 for embed in updates:
                     await channel.send(embed=embed)
 
@@ -496,7 +496,7 @@ async def remove(ctx, *, user):
 async def set_channel(ctx):
     print("set channel")
     server_channel[ctx.guild.id] = ctx.channel.id
-    mub_db.update_guild(ctx.guild.id, ctx.channel.id)
+    await mub_db.update_guild(ctx.guild.id, ctx.channel.id)
     await await_ctx(ctx=ctx, content="This channel will receive updates.")
 
 
@@ -540,14 +540,14 @@ async def help(ctx):
 async def on_guild_join(guild):
     server_users[guild.id] = []
     server_channel[guild.id] = guild.textchannels[0]
-    mub_db.add_guild(guild.id, guild.textchannels[0])
+    await mub_db.add_guild(guild.id, guild.textchannels[0])
 
 
 @client.event
 async def on_guild_remove(guild):
     del server_users[guild.id]
     del server_channel[guild.id]
-    mub_db.remove_guild(guild)
+    await mub_db.remove_guild(guild)
     remove_unnecessary_users()
 
 
@@ -562,7 +562,7 @@ async def on_ready():
     for g in client.guilds:
         if g.id not in server_channel:
             server_channel[g.id] = g.text_channels[0].id
-            mub_db.add_guild(g.id, g.text_channels[0].id)
+            await mub_db.add_guild(g.id, g.text_channels[0].id)
 
     if not tasks_created:
         client.loop.create_task(background_update())
