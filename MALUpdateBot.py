@@ -17,6 +17,7 @@ mub_db = MUBDatabase(DATABASE_URL)
 
 client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 
+index = 0
 mal_users = {}
 server_channel = {}
 server_users = {}
@@ -357,24 +358,31 @@ def print_time():
 
 
 async def main_update():
+    global index
+
+    index = index % len(mal_users)
+
     # Printing output
-    print_time()
-    print_values()
+    if index == 0:
+        print_time()
+        print_values()
 
     # Actual update
-    for user in mal_users:
-        updates = await get_user_updates(user)
-        updates = convert_updates_to_embeds(user, updates)
-        for guild in server_users:
-            if user in server_users[guild]:
-                hold_channel = server_channel[guild]
-                channel = client.get_channel(hold_channel)
-                if channel is None:
-                    channel = client.get_guild(guild).text_channels[0]
-                    server_channel[guild] = channel.id
-                    await mub_db.update_guild(guild, channel.id)
-                for embed in updates:
-                    await channel.send(embed=embed)
+    user = list(mal_users.keys())[index]
+    updates = await get_user_updates(user)
+    updates = convert_updates_to_embeds(user, updates)
+    for guild in server_users:
+        if user in server_users[guild]:
+            hold_channel = server_channel[guild]
+            channel = client.get_channel(hold_channel)
+            if channel is None:
+                channel = client.get_guild(guild).text_channels[0]
+                server_channel[guild] = channel.id
+                await mub_db.update_guild(guild, channel.id)
+            for embed in updates:
+                await channel.send(embed=embed)
+
+    index = (index + 1) % len(mal_users)
 
 
 async def reset_display_name():
@@ -399,7 +407,7 @@ async def background_update():
         end2 = time.time()
         print("Reset Display Name: ", end2 - start2)
 
-        await asyncio.sleep(60)
+        await asyncio.sleep(1)
 
 
 async def cooldown():
