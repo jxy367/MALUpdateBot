@@ -389,8 +389,16 @@ async def reset_display_name():
 async def background_update():
     await client.wait_until_ready()
     while not client.is_closed():
+        start1 = time.time()
         await main_update()
+        end1 = time.time()
+        print("Main Update: ", end1 - start1)
+
+        start2 = time.time()
         await reset_display_name()
+        end2 = time.time()
+        print("Reset Display Name: ", end2 - start2)
+
         await asyncio.sleep(60)
 
 
