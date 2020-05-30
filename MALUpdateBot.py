@@ -28,7 +28,6 @@ anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: 
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
 
 tasks_created = False
-count = 0
 start_time = time.time()
 
 
@@ -358,8 +357,8 @@ def print_time():
 
 
 async def main_update():
-    global count
     # Printing output
+    print_time()
     print_values()
 
     # Actual update
@@ -376,14 +375,6 @@ async def main_update():
                     await mub_db.update_guild(guild, channel.id)
                 for embed in updates:
                     await channel.send(embed=embed)
-
-    count += 1
-    print("Count: " + str(count))
-    count = count % 240
-    print_time()
-    if count == 0:
-        print("Logout")
-        await client.logout()
 
 
 async def reset_display_name():
