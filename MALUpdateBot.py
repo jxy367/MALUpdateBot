@@ -11,19 +11,18 @@ import time
 from bs4 import BeautifulSoup
 import json
 
-print("Start basic information gathering in main")
 TOKEN = os.environ.get('TOKEN')
 DATABASE_URL = os.environ['DATABASE_URL']
 mub_db = MUBDatabase(DATABASE_URL)
 
 client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
 
+mal_users = {}
+server_channel = {}
+server_users = {}
+
 on_cooldown = {}
 cooldown_time = 10
-
-mal_users = await mub_db.get_users()  # MAL usernames and (latest anime and manga)
-server_channel = await mub_db.get_guilds()  # Guild id and MAL usernames
-server_users = await mub_db.get_guild_users()  # Guild id and preferred channel
 
 anime_statuses = {1: "Watching", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to watch"}
 manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "Plans to read"}
@@ -31,8 +30,6 @@ manga_statuses = {1: "Reading", 2: "Completed", 3: "On-Hold", 4: "Dropped", 6: "
 tasks_created = False
 count = 0
 start_time = time.time()
-
-print("End basic information gathering in main")
 
 
 def get_cooldown_key(message_or_channel):
@@ -554,10 +551,18 @@ async def on_guild_remove(guild):
 @client.event
 async def on_ready():
     global tasks_created
+    global mal_users
+    global server_channel
+    global server_users
+
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+    mal_users = await mub_db.get_users()  # MAL usernames and (latest anime and manga)
+    server_channel = await mub_db.get_guilds()  # Guild id and preferred channel
+    server_users = await mub_db.get_guild_users()  # Guild id and MAL usernames
 
     for g in client.guilds:
         if g.id not in server_channel:
