@@ -90,15 +90,15 @@ async def mal_list(user: str, list_type: str):
     return []
 
 
-def latest_entry(user: str, list_type: str):
+async def latest_entry(user: str, list_type: str):
     user_list = await mal_list(user, list_type)
     if len(user_list) > 0:
         return user_list[0]
     return {list_type + '_title': ""}
 
 
-def latest_entry_title(user: str, list_type: str):
-    entry = latest_entry(user, list_type)
+async def latest_entry_title(user: str, list_type: str):
+    entry = await latest_entry(user, list_type)
     return entry[list_type + '_title']
 
 
@@ -243,10 +243,10 @@ async def attempt_update_retrieval(user: str, attempt_number: int):
     return updates
 
 
-def add_user(user: str, guild_id: int):
+async def add_user(user: str, guild_id: int):
     if user not in mal_users:
-        anime_entry = latest_entry_title(user, "anime")
-        manga_entry = latest_entry_title(user, "manga")
+        anime_entry = await latest_entry_title(user, "anime")
+        manga_entry = await latest_entry_title(user, "manga")
         mal_users[user] = (anime_entry, manga_entry)
         mub_db.add_user(user, anime_entry, manga_entry)
 
@@ -470,7 +470,8 @@ async def add(ctx, *, user):
         server_channel[ctx.guild.id] = ctx.channel.id
 
     if is_mal_user(user):
-        if add_user(user, ctx.guild.id):
+        success = await add_user(user, ctx.guild.id)
+        if success:
             await await_ctx(ctx=ctx, content=user + " successfully added")
         else:
             await await_ctx(ctx=ctx, content="User, " + user + ", already in list of users")
