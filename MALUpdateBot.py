@@ -255,7 +255,7 @@ async def add_user(user: str, guild_id: int):
     return False
 
 
-def remove_user(user: str, guild_id: int):
+async def remove_user(user: str, guild_id: int):
     if guild_id not in server_users:
         return False
     return_value = False
@@ -278,7 +278,7 @@ def remove_user(user: str, guild_id: int):
     return return_value
 
 
-def remove_unnecessary_users():
+async def remove_unnecessary_users():
     unnecessary_users = []
     for user in mal_users:
         user_necessary = False
@@ -481,7 +481,8 @@ async def remove(ctx, *, user):
     print("remove")
     user = user.lower()
     if user in mal_users:
-        if remove_user(user, ctx.guild.id):
+        success = await remove_user(user, ctx.guild.id)
+        if success:
             await await_ctx(ctx=ctx, content="User successfully removed")
         else:
             await await_ctx(ctx=ctx, content="User, " + user + ", could not be removed")
@@ -545,7 +546,7 @@ async def on_guild_remove(guild):
     del server_users[guild.id]
     del server_channel[guild.id]
     await mub_db.remove_guild(guild)
-    remove_unnecessary_users()
+    await remove_unnecessary_users()
 
 
 @client.event
