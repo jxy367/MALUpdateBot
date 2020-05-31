@@ -314,7 +314,7 @@ def print_values():
     print("Server and users")
     for s in server_users:
         print("Server " + str(s) + " : " + str(server_users[s]))
-
+    print("----------------------------")
 
 def print_status():
     print("---- Status ------")
@@ -371,12 +371,6 @@ async def main_update():
 
     index = index % len(mal_users)
 
-    # Printing output
-    if index == 0:
-        await asyncio.sleep(max(60 - len(mal_users), 1))
-        print_time()
-        print_values()
-
     # Actual update
     user = list(mal_users.keys())[index]
     updates = await get_user_updates(user)
@@ -405,14 +399,16 @@ async def reset_display_name():
 
 
 async def background_update():
+    global index
     await client.wait_until_ready()
     while not client.is_closed():
-        start1 = time.time()
         await main_update()
-        end1 = time.time()
-        print("Main Update: ", end1 - start1)
-
         await reset_display_name()
+
+        # Printing output
+        if index == 0:
+            await asyncio.sleep(max(60 - len(mal_users), 1))
+            print_values()
 
         await asyncio.sleep(2)
 
