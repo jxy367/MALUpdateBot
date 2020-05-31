@@ -316,6 +316,7 @@ def print_values():
         print("Server " + str(s) + " : " + str(server_users[s]))
     print("----------------------------")
 
+
 def print_status():
     print("---- Status ------")
     print("Is closed: " + str(client.is_closed()))
@@ -459,7 +460,6 @@ async def await_ctx(ctx: discord.ext.commands.Context, content=None, embed=None)
 
 @client.event
 async def on_message(message):
-    print("On message")
     if message.author.bot:
         return
 
