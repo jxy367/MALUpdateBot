@@ -396,6 +396,7 @@ async def main_update():
 
     # Printing output
     if index == 0:
+        await asyncio.sleep(max(60 - len(mal_users)), 1)
         print_time()
         print_values()
 
@@ -439,7 +440,7 @@ async def background_update():
         end2 = time.time()
         print("Reset Display Name: ", end2 - start2)
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(2)
 
 
 async def cooldown():
