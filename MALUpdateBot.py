@@ -77,15 +77,26 @@ async def mal_list(user: str, list_type: str):
     user_list = []
     url = "https://myanimelist.net/" + list_type + "list/" + user + "?order=5&status=7"
     try:
+        request_start = time.time()
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 html = await resp.read()
+                request_end = time.time()
+                print("Request Time: ", request_end-request_start)
+
+                soup_start = time.time()
                 soup = BeautifulSoup(html, "html.parser")
+                soup_end =time.time()
+                print("Soup Time: ", soup_end-soup_start)
                 table = soup.find(attrs={"class": "list-table"})
                 blah = "woo"
                 if table.has_attr('data-items'):
                     blah = table.get('data-items')
+
+                load_start = time.time()
                 user_list = json.loads(blah)
+                load_end = time.time()
+                print("JSON Load Time: ", load_end-load_start)
     except:
         print("aiohttp error occurred in mal_list")
 
