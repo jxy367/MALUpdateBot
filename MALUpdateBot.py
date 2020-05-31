@@ -408,10 +408,10 @@ async def background_update():
 
         # Printing output
         if index == 0:
-            await asyncio.sleep(max(60 - len(mal_users), 1))
+            await asyncio.sleep(max(60 - (2.5 * len(mal_users)), 1))
             print_values()
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
 
 
 async def cooldown():
