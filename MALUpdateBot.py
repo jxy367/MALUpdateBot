@@ -396,7 +396,7 @@ async def main_update():
 
     # Printing output
     if index == 0:
-        await asyncio.sleep(max(60 - len(mal_users)), 1)
+        await asyncio.sleep(max(60 - len(mal_users), 1))
         print_time()
         print_values()
 
