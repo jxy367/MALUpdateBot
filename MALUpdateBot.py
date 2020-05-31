@@ -8,9 +8,8 @@ from urllib import error
 from MUBDatabase import MUBDatabase
 import time
 import aiohttp
-from bs4 import BeautifulSoup
-from bs4 import SoupStrainer
 import json
+from lxml import etree
 
 TOKEN = os.environ.get('TOKEN')
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -82,26 +81,28 @@ async def mal_list(user: str, list_type: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 html = await resp.read()
-                request_end = time.time()
-                print("Request Time: ", request_end-request_start)
+        request_end = time.time()
+        print("Request Time: ", request_end-request_start)
 
-                soup_start = time.time()
-                listTableStrainer = SoupStrainer(attrs={"class": "list-table"})
-                soup = BeautifulSoup(html, "html.parser", parse_only=listTableStrainer)
-                soup_end = time.time()
-                print("Soup Time: ", soup_end-soup_start)
+        html_start = time.time()
+        root = etree.HTML(html)
+        data = ""
+        for elem in root.xpath("//table[@class='list-table']"):
+            if "data-items" in elem.keys():
+                data = elem.get("data-items")
+                break
 
-                table = soup.find(attrs={"class": "list-table"})
-                blah = "woo"
-                if table.has_attr('data-items'):
-                    blah = table.get('data-items')
+        html_end = time.time()
+        print("HTML Time: ", html_end-html_start)
 
-                load_start = time.time()
-                user_list = json.loads(blah)
-                load_end = time.time()
-                print("JSON Load Time: ", load_end-load_start)
+        load_start = time.time()
+        if data != "":
+            user_list = json.loads(data)
+        load_end = time.time()
+        print("JSON Load Time: ", load_end-load_start)
+
     except:
-        print("aiohttp error occurred in mal_list")
+        print("Error occurred in mal_list")
 
     end = time.time()
     print("Mal List: ", end-start)
