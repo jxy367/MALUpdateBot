@@ -7,7 +7,7 @@ from urllib import request
 from urllib import error
 from MUBDatabase import MUBDatabase
 import time
-
+import aiohttp
 from bs4 import BeautifulSoup
 import json
 
@@ -61,30 +61,38 @@ def reset_cooldown(message_or_channel):
 
 
 def is_mal_user(user: str):
+    result = False
     url = "https://myanimelist.net/profile/" + user
     try:
         urllib.request.urlopen(url)
-        return True
+        result = True
     except urllib.error.HTTPError:
-        return False
+        pass
+
+    return result
 
 
 async def mal_list(user: str, list_type: str):
+    start = time.time()
+    user_list = []
     url = "https://myanimelist.net/" + list_type + "list/" + user + "?order=5&status=7"
     try:
-        response = urllib.request.urlopen(url)
-        html = response.read()
-        soup = BeautifulSoup(html, "html.parser")
-        table = soup.find(attrs={"class": "list-table"})
-        blah = "woo"
-        if table.has_attr('data-items'):
-            blah = table.get('data-items')
-        user_list = json.loads(blah)
-        return user_list
-    except urllib.error.HTTPError:
-        print("urllib.error.HTTPError occurred in mal_list")
-    print("Error occurred in mal_list, error should be above")
-    return []
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                html = await resp.read()
+                soup = BeautifulSoup(html, "html.parser")
+                table = soup.find(attrs={"class": "list-table"})
+                blah = "woo"
+                if table.has_attr('data-items'):
+                    blah = table.get('data-items')
+                user_list = json.loads(blah)
+    except:
+        print("aiohttp error occurred in mal_list")
+
+    end = time.time()
+    print("Mal List: ", end-start)
+
+    return user_list
 
 
 async def latest_entry(user: str, list_type: str):
@@ -179,6 +187,7 @@ def convert_manga_update_to_embed(user, update):
 
 
 async def get_user_updates(user: str):
+    start = time.time()
     attempt_number = 1
     continue_loop = True
     updates = []
@@ -189,10 +198,15 @@ async def get_user_updates(user: str):
         else:
             attempt_number += 1
 
+    end = time.time()
+    print("Get User Updates: ", end-start)
+
     return updates
 
 
 async def attempt_update_retrieval(user: str, attempt_number: int):
+    start = time.time()
+
     updates = []
     last_anime_entry, last_manga_entry = mal_users[user]
     anime_list = await mal_list(user, "anime")
@@ -236,6 +250,9 @@ async def attempt_update_retrieval(user: str, attempt_number: int):
         manga = manga_list[0]['manga_title']  # Most recent manga title
         mal_users[user] = (anime, manga)  # Update in dictionary
         await mub_db.update_user(user, anime, manga)  # Update in database
+
+    end = time.time()
+    print("Attempt Update Retrieval: ", end-start)
 
     return updates
 
