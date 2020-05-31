@@ -9,6 +9,7 @@ from MUBDatabase import MUBDatabase
 import time
 import aiohttp
 from bs4 import BeautifulSoup
+from bs4 import SoupStrainer
 import json
 
 TOKEN = os.environ.get('TOKEN')
@@ -85,9 +86,11 @@ async def mal_list(user: str, list_type: str):
                 print("Request Time: ", request_end-request_start)
 
                 soup_start = time.time()
-                soup = BeautifulSoup(html, "html.parser")
-                soup_end =time.time()
+                listTableStrainer = SoupStrainer(attrs={"class": "list-table"})
+                soup = BeautifulSoup(html, "html.parser", parse_only=listTableStrainer)
+                soup_end = time.time()
                 print("Soup Time: ", soup_end-soup_start)
+
                 table = soup.find(attrs={"class": "list-table"})
                 blah = "woo"
                 if table.has_attr('data-items'):
