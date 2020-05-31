@@ -73,18 +73,13 @@ def is_mal_user(user: str):
 
 
 async def mal_list(user: str, list_type: str):
-    start = time.time()
     user_list = []
     url = "https://myanimelist.net/" + list_type + "list/" + user + "?order=5&status=7"
     try:
-        request_start = time.time()
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 html = await resp.read()
-        request_end = time.time()
-        print("Request Time: ", request_end-request_start)
 
-        html_start = time.time()
         root = etree.HTML(html)
         data = ""
         for elem in root.xpath("//table[@class='list-table']"):
@@ -92,20 +87,11 @@ async def mal_list(user: str, list_type: str):
                 data = elem.get("data-items")
                 break
 
-        html_end = time.time()
-        print("HTML Time: ", html_end-html_start)
-
-        load_start = time.time()
         if data != "":
             user_list = json.loads(data)
-        load_end = time.time()
-        print("JSON Load Time: ", load_end-load_start)
 
     except:
         print("Error occurred in mal_list")
-
-    end = time.time()
-    print("Mal List: ", end-start)
 
     return user_list
 
@@ -202,7 +188,6 @@ def convert_manga_update_to_embed(user, update):
 
 
 async def get_user_updates(user: str):
-    start = time.time()
     attempt_number = 1
     continue_loop = True
     updates = []
@@ -213,15 +198,10 @@ async def get_user_updates(user: str):
         else:
             attempt_number += 1
 
-    end = time.time()
-    print("Get User Updates: ", end-start)
-
     return updates
 
 
 async def attempt_update_retrieval(user: str, attempt_number: int):
-    start = time.time()
-
     updates = []
     last_anime_entry, last_manga_entry = mal_users[user]
     anime_list = await mal_list(user, "anime")
@@ -265,9 +245,6 @@ async def attempt_update_retrieval(user: str, attempt_number: int):
         manga = manga_list[0]['manga_title']  # Most recent manga title
         mal_users[user] = (anime, manga)  # Update in dictionary
         await mub_db.update_user(user, anime, manga)  # Update in database
-
-    end = time.time()
-    print("Attempt Update Retrieval: ", end-start)
 
     return updates
 
@@ -435,10 +412,7 @@ async def background_update():
         end1 = time.time()
         print("Main Update: ", end1 - start1)
 
-        start2 = time.time()
         await reset_display_name()
-        end2 = time.time()
-        print("Reset Display Name: ", end2 - start2)
 
         await asyncio.sleep(2)
 
