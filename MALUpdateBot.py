@@ -200,7 +200,9 @@ async def get_user_updates(user: str):
         if len(updates) == 0 or updates[0] is not False:
             continue_loop = False
         else:
+            await asyncio.sleep(2)
             attempt_number += 1
+
 
     return updates
 
@@ -412,10 +414,10 @@ async def background_update():
 
         # Printing output
         if index == 0:
-            await asyncio.sleep(max(60 - (11.5 * len(mal_users)), 1))
+            await asyncio.sleep(max(60 - (len(mal_users)), 1))
             print_values()
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(2)
 
 
 async def cooldown():
