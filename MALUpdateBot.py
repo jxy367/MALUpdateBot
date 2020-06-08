@@ -79,7 +79,7 @@ async def mal_list(user: str, list_type: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 if resp.status != 200:
-                    text = f"Response Error Code: {resp.status}"
+                    text = f"Response Error Code: {resp.status} - {resp.reason}"
                     print(text)
                     raise ValueError(text)
                 html = await resp.read()
@@ -412,10 +412,10 @@ async def background_update():
 
         # Printing output
         if index == 0:
-            await asyncio.sleep(max(60 - (2.5 * len(mal_users)), 1))
+            await asyncio.sleep(max(60 - (11.5 * len(mal_users)), 1))
             print_values()
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(10)
 
 
 async def cooldown():
