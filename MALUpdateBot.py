@@ -417,7 +417,7 @@ async def background_update():
             await asyncio.sleep(max(60 - (len(mal_users)), 1))
             print_values()
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(10)
 
 
 async def cooldown():
