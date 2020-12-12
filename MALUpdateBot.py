@@ -15,7 +15,7 @@ TOKEN = os.environ.get('TOKEN')
 DATABASE_URL = os.environ['DATABASE_URL']
 mub_db = MUBDatabase(DATABASE_URL)
 
-client = commands.Bot(command_prefix="MUB ", case_insensitive=True)
+client = commands.Bot(command_prefix="MUB ", case_insensitive=True, intents=discord.Intents.all(), fetch_offline_members=True)
 
 index = 0
 mal_users = {}
