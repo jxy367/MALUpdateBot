@@ -127,7 +127,7 @@ def convert_updates_to_embeds(user, updates):
 
 
 def convert_anime_update_to_embed(user, update):
-    title = update['anime_title']
+    title = str(update['anime_title'])
     embed = discord.Embed(title=user + " updated " + title)
     if 'anime_image_path' in update:
         embed.set_image(url=update['anime_image_path'])
@@ -158,7 +158,7 @@ def convert_anime_update_to_embed(user, update):
 
 
 def convert_manga_update_to_embed(user, update):
-    title = update['manga_title']
+    title = str(update['manga_title'])
     embed = discord.Embed(title=user + " updated " + title)
     if 'manga_image_path' in update:
         embed.set_image(url=update['manga_image_path'])
@@ -202,7 +202,6 @@ async def get_user_updates(user: str):
         else:
             await asyncio.sleep(2)
             attempt_number += 1
-
 
     return updates
 
