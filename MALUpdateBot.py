@@ -237,8 +237,8 @@ async def attempt_update_retrieval(user: str, attempt_number: int):
             return [False]  # Failure
         else:
             # In case someone actually updated with 30+ items
-            anime = anime_list[0]['anime_title']  # Most recent anime title
-            manga = manga_list[0]['manga_title']  # Most recent manga title
+            anime = "" if len(anime_list) == 0 else anime_list[0]['anime_title']  # Most recent anime title
+            manga = "" if len(manga_list) == 0 else manga_list[0]['manga_title']  # Most recent manga title
             mal_users[user] = (anime, manga)  # Update in dictionary
             await mub_db.update_user(user, anime, manga)  # Update in database
 
