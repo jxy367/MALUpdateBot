@@ -79,7 +79,7 @@ async def mal_list(user: str, list_type: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 if resp.status != 200:
-                    text = f"Response Error Code: {resp.status} - {resp.reason}"
+                    text = f"Response Error Code for {user}: {resp.status} - {resp.reason}"
                     print(text)
                     raise ValueError(text)
                 html = await resp.read()
